@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Walkies - Dog Walking App</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+
+    <div id="page-onboarding" class="page">
+        <div style="width:100vw; overflow:hidden;">
+            <div class="onboarding-slides" id="onboarding-slides-container">
+                <div class="onboarding-slide">
+                    <div class="onboarding-icon"><svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/><path d="m16 14-4 4-2-2"/></svg></div>
+                    <h2 class="text-2xl font-bold">Plan the Perfect Walk</h2>
+                    <p class="opacity-80">Easily schedule walks that fit your and your dog's needs.</p>
+                </div>
+                <div class="onboarding-slide">
+                    <div class="onboarding-icon"><svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+                    <h2 class="text-2xl font-bold">Choose a Trusted Walker</h2>
+                    <p class="opacity-80">Select from a list of verified, top-rated walkers in your area.</p>
+                </div>
+                <div class="onboarding-slide">
+                    <div class="onboarding-icon"><svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path><circle cx="12" cy="10" r="3"></circle></svg></div>
+                    <h2 class="text-2xl font-bold">Track Every Step</h2>
+                    <p class="opacity-80">Follow along with live GPS tracking and get photo updates.</p>
+                </div>
+            </div>
+        </div>
+        <div class="onboarding-dots" id="onboarding-dots-container"></div>
+        <div class="mt-8 px-8 w-full max-w-sm">
+            <button id="onboarding-next-btn" class="btn btn-primary w-full">Next</button>
+        </div>
+    </div>
+    
+    <div class="app-container">
+        <!-- MAIN CONTENT AREA FOR ALL PAGES -->
+        <main class="main-content">
+            <div class="page-content-wrapper">
+
+                <!-- ===== PAGE: HOME/DASHBOARD ===== -->
+                <section class="page" id="page-home">
+                    <div class="space-y-8 stagger-in">
+                        <div class="text-center pt-4">
+                            <h1 class="text-3xl font-bold">Hello, Alex!</h1>
+                            <p class="opacity-80">Ready for a new adventure? 🐾</p>
+                        </div>
+                        
+                        <div id="upcoming-walk-section">
+                            <h2 class="text-lg font-semibold mb-3">Upcoming Walk</h2>
+                            <div id="upcoming-walk-card" class="glass-card p-4 flex items-center gap-4 cursor-pointer" data-walk-id="99">
+                                <img src="https://placehold.co/100x100/7F00FF/FFFFFF?text=J" alt="Jordan Lee" class="w-12 h-12 rounded-full">
+                                <div>
+                                    <p class="font-semibold">With Jordan Lee</p>
+                                    <p class="text-sm opacity-80">Today at 4:00 PM</p>
+                                </div>
+                                <div class="ml-auto text-right">
+                                    <p class="font-bold">30 min</p>
+                                    <p class="text-sm opacity-80">🐶 Buddy</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                             <button id="cta-book-walk" class="btn btn-primary w-full text-base py-4">Book New Walk</button>
+                             <button id="cta-recurring-walk" class="btn btn-secondary w-full text-base py-4">Schedule Walk</button>
+                        </div>
+
+                        <div>
+                             <h2 class="text-lg font-semibold mb-3">Recent Activity</h2>
+                             <div class="space-y-3" id="recent-activity-list"></div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- ===== PAGE: BOOKING FLOW CONTAINER ===== -->
+                <section class="page booking-flow-page" id="page-booking-flow"></section>
+                
+                <!-- ===== PAGE: WALK HISTORY ===== -->
+                <section class="page" id="page-history">
+                     <div class="page-header"><div class="placeholder"></div><h1>Walk History</h1></div>
+                    <div class="space-y-4" id="history-list-container"></div>
+                </section>
+
+                <!-- ===== PAGE: WALK SUMMARY ===== -->
+                <section class="page" id="page-walk-summary">
+                     <!-- Dynamic Content -->
+                </section>
+
+                <!-- ===== PAGE: MY DOGS ===== -->
+                <section class="page" id="page-dogs">
+                    <div class="page-header"><div class="placeholder"></div><h1>My Dogs</h1></div>
+                    <div class="space-y-4" id="dog-list-container"></div>
+                    <button id="btn-add-dog" class="btn btn-secondary w-full mt-6">Add New Dog</button>
+                </section>
+                
+                <!-- ===== PAGE: ADD/EDIT DOG ===== -->
+                <section class="page" id="page-dog-form">
+                     <!-- Dynamic Content -->
+                </section>
+
+                <!-- ===== PAGE: INBOX ===== -->
+                <section class="page" id="page-inbox">
+                    <div class="page-header"><div class="placeholder"></div><h1>Messages</h1></div>
+                    <div class="space-y-3" id="inbox-list-container"></div>
+                </section>
+
+                <!-- ===== PAGE: CHAT ===== -->
+                <section class="page" id="page-chat">
+                     <!-- Dynamic Content -->
+                </section>
+                
+                <!-- ===== PAGE: PROFILE ===== -->
+                <section class="page" id="page-profile">
+                    <div class="page-header"><div class="placeholder"></div><h1>My Profile</h1></div>
+                    <div class="space-y-6">
+                        <div class="flex flex-col items-center">
+                            <img src="https://placehold.co/150x150/9370DB/FFFFFF?text=A" class="w-24 h-24 rounded-full border-4 border-[var(--glass-border)]">
+                            <h2 class="text-2xl font-bold mt-4">Alex Morgan</h2>
+                            <p class="opacity-70">alex.morgan@email.com</p>
+                        </div>
+                        <div class="glass-card p-4 divide-y divide-[var(--glass-border)]">
+                            <a href="#" class="profile-link py-3 flex justify-between items-center"><span>Edit Profile</span><span>></span></a>
+                            <a href="#" class="profile-link py-3 flex justify-between items-center" data-target="page-payments"><span>Payment Methods</span><span>></span></a>
+                            <a href="#" class="profile-link py-3 flex justify-between items-center" data-target="page-promotions"><span>Promotions & Referrals</span><span>></span></a>
+                            <a href="#" class="profile-link py-3 flex justify-between items-center"><span>Help & Support</span><span>></span></a>
+                        </div>
+                        <button class="btn btn-secondary w-full">Log Out</button>
+                    </div>
+                </section>
+
+                <!-- ===== PAGE: WALKER PROFILE ===== -->
+                <section class="page" id="page-walker-profile">
+                     <!-- Dynamic Content -->
+                </section>
+
+                <!-- ===== PAGE: LIVE WALK TRACKING ===== -->
+                 <section class="page" id="page-live-tracking">
+                     <!-- Dynamic Content -->
+                 </section>
+
+                 <!-- ===== PAGE: RECURRING WALKS ===== -->
+                 <section class="page" id="page-recurring-walks">
+                      <!-- Dynamic Content -->
+                 </section>
+                 
+                 <!-- ===== PAGE: PAYMENTS ===== -->
+                 <section class="page" id="page-payments">
+                      <!-- Dynamic Content -->
+                 </section>
+
+                 <!-- ===== PAGE: PROMOTIONS ===== -->
+                 <section class="page" id="page-promotions">
+                      <!-- Dynamic Content -->
+                 </section>
+
+            </div>
+        </main>
+
+        <!-- BOTTOM NAVIGATION BAR -->
+        <nav class="bottom-nav">
+            <button class="nav-item active" data-target="page-home">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                <span>Home</span>
+            </button>
+            <button class="nav-item" data-target="page-history">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></svg>
+                <span>History</span>
+            </button>
+             <button class="nav-item" data-target="page-inbox">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22v-7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v7"/><path d="M4 18h.01"/><path d="M2 14h.01"/><path d="M22 14h-.01"/><path d="M18 18h.01"/><path d="M6 18h.01"/><path d="M12 18h.01"/><path d="M16 5.86a4.5 4.5 0 1 0-8 0c0 1.5.63 3.05 1.76 4.14L12 12l2.24-2c1.13-1.09 1.76-2.64 1.76-4.14Z"/></svg>
+                <span>Messages</span>
+            </button>
+            <button class="nav-item" data-target="page-dogs">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.66 22.47a2.5 2.5 0 0 0 2.68 0l.28-.11a1.23 1.23 0 0 1 1.2 0l.35.14a2.5 2.5 0 0 0 2.52 0l.28-.11a1.23 1.23 0 0 1 1.2 0l.35.14a2.5 2.5 0 0 0 2.52 0l.28-.11a1.23 1.23 0 0 1 1.2 0l.35.14a2.5 2.5 0 0 0 2.52 0V8.29a2.5 2.5 0 0 0-1.26-2.17l-.35-.18a1.23 1.23 0 0 1-.6-1.08V4.5a2.5 2.5 0 0 0-2.5-2.5h-2.5"/><path d="M2.12 12.21a2.5 2.5 0 0 0-1.26 2.17v.3a2.5 2.5 0 0 0 2.5 2.5h.5a1.23 1.23 0 0 1 1.2 1.2v.3a2.5 2.5 0 0 0 2.5 2.5h.5a1.23 1.23 0 0 1 1.2 1.2v.3a2.5 2.5 0 0 0 2.5 2.5h.5"/></svg>
+                <span>Dogs</span>
+            </button>
+            <button class="nav-item" data-target="page-profile">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                <span>Profile</span>
+            </button>
+        </nav>
+    </div>
+
+    <!-- Success Modal will be appended to body by JS to ensure it's on top -->
+    
+    
+    <script src="assets/js/app.js" defer></script>
+</body>
+</html>
+
