@@ -229,12 +229,16 @@ function renderDashboard() {
         }
     }
 
-    document.getElementById('recent-activity-list').innerHTML = walkHistoryData.filter(w => w.status === 'Completed').slice(0, 2).map(walk => `
-        <div class="glass-card p-3 flex items-center gap-3">
-            <img src="${walk.walker.avatar}" class="w-10 h-10 rounded-full">
-            <div><p class="font-semibold">Walk with ${walk.walker.name}</p><p class="text-xs opacity-70">${new Date(walk.date+'T00:00:00').toLocaleDateString()}</p></div>
-            <span class="ml-auto font-bold text-sm">$${walk.price.toFixed(2)}</span>
-        </div>`).join('');
+    document.getElementById('recent-activity-list').innerHTML = walkHistoryData
+        .filter(w => w.status === 'Completed')
+        .slice(0, 2)
+        .map(walk => `
+            <div class="glass-card p-3 flex items-center gap-3">
+                <img src="${walk.walker.avatar}" class="w-10 h-10 rounded-full">
+                <div><p class="font-semibold">Walk with ${walk.walker.name}</p><p class="text-xs opacity-70">${new Date(walk.date+'T00:00:00').toLocaleDateString()}</p></div>
+                <span class="ml-auto font-bold text-sm">$${walk.price.toFixed(2)}</span>
+            </div>`)
+        .join('');
 }
 
 function renderHistoryPage() {
