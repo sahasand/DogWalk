@@ -247,34 +247,6 @@ function renderDashboard() {
             </div>`).join('');
     }
 
-    const historyList = document.getElementById('home-history-list');
-    if (historyList) {
-        historyList.innerHTML = completedWalks.map(walk => `
-            <div class="glass-card p-4 cursor-pointer home-history-item" data-walk-id="${walk.id}">
-                <div class="flex justify-between items-center">
-                    <div>
-                        <p class="font-bold text-lg">${new Date(walk.date + 'T00:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}</p>
-                        <p class="text-sm opacity-80">With ${walk.walker.name}</p>
-                    </div>
-                    <div class="text-right">
-                        <p class="font-bold text-lg">$${walk.price.toFixed(2)}</p>
-                        <p class="text-sm opacity-80">${walk.dogs.map(d => d.avatar).join(' ')}</p>
-                    </div>
-                </div>
-            </div>`).join('');
-
-        historyList.querySelectorAll('.home-history-item').forEach(item => {
-            item.addEventListener('click', e => {
-                const walkId = parseInt(e.currentTarget.dataset.walkId);
-                goToPage('page-walk-summary', { walkId });
-            });
-        });
-    }
-
-    const viewAllHistoryBtn = document.getElementById('btn-view-all-history');
-    if (viewAllHistoryBtn) {
-        viewAllHistoryBtn.onclick = () => goToPage('page-history');
-    }
 }
 
 function renderHistoryPage() {
