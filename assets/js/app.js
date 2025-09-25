@@ -229,12 +229,52 @@ function renderDashboard() {
         }
     }
 
-    document.getElementById('recent-activity-list').innerHTML = walkHistoryData.filter(w => w.status === 'Completed').slice(0, 2).map(walk => `
-        <div class="glass-card p-3 flex items-center gap-3">
-            <img src="${walk.walker.avatar}" class="w-10 h-10 rounded-full">
-            <div><p class="font-semibold">Walk with ${walk.walker.name}</p><p class="text-xs opacity-70">${new Date(walk.date+'T00:00:00').toLocaleDateString()}</p></div>
-            <span class="ml-auto font-bold text-sm">$${walk.price.toFixed(2)}</span>
-        </div>`).join('');
+    const completedWalks = walkHistoryData
+        .filter(w => w.status === 'Completed')
+        .sort((a, b) => new Date(b.date + 'T00:00:00') - new Date(a.date + 'T00:00:00'));
+
+    const recentActivityList = document.getElementById('recent-activity-list');
+    if (recentActivityList) {
+        const recentWalks = completedWalks.slice(0, 2);
+        recentActivityList.innerHTML = recentWalks.map(walk => `
+            <div class="glass-card p-3 flex items-center gap-3">
+                <img src="${walk.walker.avatar}" class="w-10 h-10 rounded-full" alt="${walk.walker.name}">
+                <div>
+                    <p class="font-semibold">Walk with ${walk.walker.name}</p>
+                    <p class="text-xs opacity-70">${new Date(walk.date + 'T00:00:00').toLocaleDateString()}</p>
+                </div>
+                <span class="ml-auto font-bold text-sm">$${walk.price.toFixed(2)}</span>
+            </div>`).join('');
+    }
+
+    const historyList = document.getElementById('home-history-list');
+    if (historyList) {
+        historyList.innerHTML = completedWalks.map(walk => `
+            <div class="glass-card p-4 cursor-pointer home-history-item" data-walk-id="${walk.id}">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <p class="font-bold text-lg">${new Date(walk.date + 'T00:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}</p>
+                        <p class="text-sm opacity-80">With ${walk.walker.name}</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="font-bold text-lg">$${walk.price.toFixed(2)}</p>
+                        <p class="text-sm opacity-80">${walk.dogs.map(d => d.avatar).join(' ')}</p>
+                    </div>
+                </div>
+            </div>`).join('');
+
+        historyList.querySelectorAll('.home-history-item').forEach(item => {
+            item.addEventListener('click', e => {
+                const walkId = parseInt(e.currentTarget.dataset.walkId);
+                goToPage('page-walk-summary', { walkId });
+            });
+        });
+    }
+
+    const viewAllHistoryBtn = document.getElementById('btn-view-all-history');
+    if (viewAllHistoryBtn) {
+        viewAllHistoryBtn.onclick = () => goToPage('page-history');
+    }
 }
 
 function renderHistoryPage() {
