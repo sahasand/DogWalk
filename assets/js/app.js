@@ -418,9 +418,12 @@ function fullInitBookingFlow() {
 
     // Init Screen 3
     function renderReviewScreen() {
-        bookingState.total = bookingState.selectedWalker.price;
+        const servicePrice = bookingState?.service?.price || 0;
+        const serviceDuration = bookingState?.service?.duration;
+        bookingState.total = servicePrice;
         document.getElementById('summary-details').innerHTML = `<div class="py-2 flex justify-between"><span>Date & Time</span><span class="text-right font-semibold">${bookingState.dateTime.date} at ${bookingState.dateTime.time}</span></div> <div class="py-2 flex justify-between"><span>Dogs</span><span class="text-right font-semibold">${bookingState.selectedDogs.map(d=>d.name).join(', ')}</span></div> <div class="py-2 flex justify-between"><span>Walker</span><span class="text-right font-semibold">${bookingState.selectedWalker.name}</span></div>`;
-        document.getElementById('price-details').innerHTML = `<div class="py-2 flex justify-between"><span>Walk Price</span> <span>$${bookingState.total.toFixed(2)}</span></div>`;
+        const serviceLabel = serviceDuration ? `${serviceDuration} min walk` : 'Walk Price';
+        document.getElementById('price-details').innerHTML = `<div class="py-2 flex justify-between"><span>${serviceLabel}</span> <span>$${bookingState.total.toFixed(2)}</span></div>`;
         document.getElementById('total-price').textContent = `$${bookingState.total.toFixed(2)}`;
     }
 
