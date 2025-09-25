@@ -115,6 +115,15 @@ const fullBookingFlowHTML = `
 
 // --- ALL APP FUNCTIONS ---
 
+const launchBookingFlow = (source = null) => {
+    const bookingPage = document.getElementById('page-booking-flow');
+    if (!bookingPage) return;
+
+    bookingPage.innerHTML = fullBookingFlowHTML;
+    fullInitBookingFlow();
+    goToPage('page-booking-flow', { source });
+};
+
 const goToPage = (pageId, context = null) => {
     vibrate();
     const pages = document.querySelectorAll('.page');
@@ -581,7 +590,18 @@ function initApp() {
 }
 
 // Add main event listeners
-document.querySelectorAll('.nav-item').forEach(item => item.addEventListener('click', () => goToPage(item.dataset.target)));
+function handleNavItemClick(item) {
+    const target = item?.dataset?.target;
+    if (!target) return;
+
+    if (target === 'page-booking-flow') {
+        launchBookingFlow('bottom-nav');
+    } else {
+        goToPage(target);
+    }
+}
+
+document.querySelectorAll('.nav-item').forEach(item => item.addEventListener('click', () => handleNavItemClick(item)));
 
 const profileOverlay = document.getElementById('profile-sheet-overlay');
 const profileCloseBtn = document.getElementById('profile-sheet-close');
@@ -620,11 +640,7 @@ document.body.addEventListener('click', e => {
          goToPage(profileLink.dataset.target);
      }
 });
-document.getElementById('cta-book-walk').addEventListener('click', () => {
-    document.getElementById('page-booking-flow').innerHTML = fullBookingFlowHTML;
-    fullInitBookingFlow();
-    goToPage('page-booking-flow');
-});
+document.getElementById('cta-book-walk').addEventListener('click', () => launchBookingFlow('home-cta'));
 document.getElementById('cta-recurring-walk').addEventListener('click', () => goToPage('page-recurring-walks'));
 document.getElementById('btn-add-dog').addEventListener('click', () => goToPage('page-dog-form'));
 
