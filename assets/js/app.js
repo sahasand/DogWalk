@@ -32,6 +32,24 @@ const paymentData = {
 // --- APP STATE ---
 const appState = { currentPage: 'page-home' };
 
+const toggleProfileSheet = (show = false) => {
+    const sheet = document.getElementById('profile-sheet');
+    const overlay = document.getElementById('profile-sheet-overlay');
+    if (!sheet || !overlay) return;
+
+    if (show) {
+        sheet.classList.add('active');
+        overlay.classList.add('active');
+        sheet.setAttribute('aria-hidden', 'false');
+    } else {
+        sheet.classList.remove('active');
+        overlay.classList.remove('active');
+        sheet.setAttribute('aria-hidden', 'true');
+    }
+};
+
+const closeProfileSheet = () => toggleProfileSheet(false);
+
 // --- BOOKING FLOW HTML ---
 const fullBookingFlowHTML = `
     <div class="page-header"><button class="back-btn" data-target="page-home"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button><h1>Book a Walk</h1></div>
@@ -103,6 +121,8 @@ const goToPage = (pageId, context = null) => {
     const navItems = document.querySelectorAll('.nav-item');
     const mainContent = document.querySelector('.main-content');
     const appContainer = document.querySelector('.app-container');
+
+    closeProfileSheet();
 
     pages.forEach(page => page.classList.remove('active'));
     const targetPage = document.getElementById(pageId);
@@ -562,6 +582,34 @@ function initApp() {
 
 // Add main event listeners
 document.querySelectorAll('.nav-item').forEach(item => item.addEventListener('click', () => goToPage(item.dataset.target)));
+
+const profileOverlay = document.getElementById('profile-sheet-overlay');
+const profileCloseBtn = document.getElementById('profile-sheet-close');
+const profileTriggerBtn = document.getElementById('home-profile-button');
+
+if (profileTriggerBtn) profileTriggerBtn.addEventListener('click', () => toggleProfileSheet(true));
+if (profileCloseBtn) profileCloseBtn.addEventListener('click', closeProfileSheet);
+if (profileOverlay) profileOverlay.addEventListener('click', closeProfileSheet);
+
+document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+        const sheet = document.getElementById('profile-sheet');
+        if (sheet && sheet.classList.contains('active')) {
+            closeProfileSheet();
+        }
+    }
+});
+
+document.querySelectorAll('.profile-sheet-link').forEach(link => {
+    link.addEventListener('click', e => {
+        const target = link.dataset.target;
+        if (!target) return;
+        e.preventDefault();
+        closeProfileSheet();
+        goToPage(target);
+    });
+});
+
 document.body.addEventListener('click', e => {
      const backBtn = e.target.closest('.back-btn');
      const profileLink = e.target.closest('.profile-link');
