@@ -139,6 +139,20 @@ const goToPage = (pageId, context = null) => {
     }
 };
 
+function launchBookingFlow(source = 'nav') {
+    const bookingPage = document.getElementById('page-booking-flow');
+    if (!bookingPage) return;
+
+    bookingPage.innerHTML = fullBookingFlowHTML;
+    fullInitBookingFlow();
+
+    if (typeof window !== 'undefined' && window.analytics && typeof window.analytics.track === 'function') {
+        window.analytics.track('navigate_to_booking_flow', { source });
+    }
+
+    goToPage('page-booking-flow');
+}
+
 function vibrate(duration = 10) { if (window.navigator.vibrate) window.navigator.vibrate(duration); }
 
 function renderDashboard() {
@@ -561,7 +575,18 @@ function initApp() {
 }
 
 // Add main event listeners
-document.querySelectorAll('.nav-item').forEach(item => item.addEventListener('click', () => goToPage(item.dataset.target)));
+function handleNavItemClick(item) {
+    const target = item?.dataset?.target;
+    if (!target) return;
+
+    if (target === 'page-booking-flow') {
+        launchBookingFlow('bottom-nav');
+    } else {
+        goToPage(target);
+    }
+}
+
+document.querySelectorAll('.nav-item').forEach(item => item.addEventListener('click', () => handleNavItemClick(item)));
 document.body.addEventListener('click', e => {
      const backBtn = e.target.closest('.back-btn');
      const profileLink = e.target.closest('.profile-link');
@@ -572,11 +597,7 @@ document.body.addEventListener('click', e => {
          goToPage(profileLink.dataset.target);
      }
 });
-document.getElementById('cta-book-walk').addEventListener('click', () => {
-    document.getElementById('page-booking-flow').innerHTML = fullBookingFlowHTML;
-    fullInitBookingFlow();
-    goToPage('page-booking-flow');
-});
+document.getElementById('cta-book-walk').addEventListener('click', () => launchBookingFlow('home-cta'));
 document.getElementById('cta-recurring-walk').addEventListener('click', () => goToPage('page-recurring-walks'));
 document.getElementById('btn-add-dog').addEventListener('click', () => goToPage('page-dog-form'));
 
