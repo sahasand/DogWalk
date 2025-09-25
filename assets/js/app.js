@@ -11,7 +11,7 @@ const walkerData = [
     { id: 3, name: 'Casey Smith', avatar: 'https://placehold.co/100x100/9370DB/FFFFFF?text=C', verified: false, rating: 4.7, reviews: 75, price: 22, bio: "As a veterinary student, I have a deep understanding of animal care and behavior. I'm especially good with shy or anxious dogs.", badges: ["Experience with Puppies"], favorite: true },
 ];
 let walkHistoryData = [
-    { id: 99, date: '2025-09-16', time: '16:00', walker: walkerData[1], dogs: [dogData[0]], price: 25.00, status: 'In Progress' },
+    { id: 99, date: '2025-09-16', time: '16:00', duration: 30, walker: walkerData[1], dogs: [dogData[0]], price: 25.00, status: 'In Progress' },
     { id: 1, date: '2025-09-11', walker: walkerData[1], dogs: [dogData[0]], price: 25.00, status: 'Completed', photos: ['https://placehold.co/300x200/5f3781/FFFFFF?text=Buddy+Playing', 'https://placehold.co/300x200/8A2BE2/FFFFFF?text=Happy+Pup'], activity: { pee: true, poo: true, water: true }, note: "Buddy had a great time at the park. Full of energy today!" },
     { id: 2, date: '2025-09-09', walker: walkerData[0], dogs: [dogData[0], dogData[1]], price: 40.00, status: 'Completed', photos: [], activity: { pee: true, poo: false, water: true }, note: "Lucy was a little shy but warmed up. Buddy was great as always." },
     { id: 3, date: '2025-09-05', walker: walkerData[2], dogs: [dogData[2]], price: 22.00, status: 'Completed', photos: ['https://placehold.co/300x200/9370DB/FFFFFF?text=Max+Running'], activity: { pee: true, poo: true, water: false }, note: "Max loved the long run by the lake!" },
@@ -142,15 +142,79 @@ const goToPage = (pageId, context = null) => {
 function vibrate(duration = 10) { if (window.navigator.vibrate) window.navigator.vibrate(duration); }
 
 function renderDashboard() {
-    const upcomingWalk = walkHistoryData.find(w => w.status === 'In Progress');
     const upcomingSection = document.getElementById('upcoming-walk-section');
-    if (upcomingWalk) {
-        upcomingSection.style.display = 'block';
-        const upcomingCard = document.getElementById('upcoming-walk-card');
-        upcomingCard.onclick = () => goToPage('page-live-tracking', { walkId: upcomingWalk.id });
-    } else {
-        upcomingSection.style.display = 'none';
+    const upcomingCard = document.getElementById('upcoming-walk-card');
+    if (upcomingSection && upcomingCard) {
+        const statusPriority = { 'In Progress': 0, 'Upcoming': 1 };
+        const sortByDate = (a, b) => {
+            if (a.date && b.date) {
+                const timeA = new Date(`${a.date}T${a.time || '00:00'}`);
+                const timeB = new Date(`${b.date}T${b.time || '00:00'}`);
+                if (!Number.isNaN(timeA.valueOf()) && !Number.isNaN(timeB.valueOf())) {
+                    return timeA - timeB;
+                }
+            }
+            return 0;
+        };
+        const upcomingWalk = walkHistoryData
+            .filter(walk => ['In Progress', 'Upcoming'].includes(walk.status))
+            .sort((a, b) => {
+                const statusDiff = (statusPriority[a.status] ?? 2) - (statusPriority[b.status] ?? 2);
+                if (statusDiff !== 0) return statusDiff;
+                return sortByDate(a, b);
+            })[0];
+
+        if (upcomingWalk) {
+            upcomingSection.style.display = 'block';
+            upcomingCard.dataset.walkId = upcomingWalk.id;
+
+            const avatarEl = document.getElementById('upcoming-walk-avatar');
+            const titleEl = document.getElementById('upcoming-walk-title');
+            const timeEl = document.getElementById('upcoming-walk-time');
+            const durationEl = document.getElementById('upcoming-walk-duration');
+            const dogsEl = document.getElementById('upcoming-walk-dogs');
+
+            const walkerName = upcomingWalk.walker?.name || 'Your walker';
+            if (avatarEl) {
+                if (upcomingWalk.walker?.avatar) avatarEl.src = upcomingWalk.walker.avatar;
+                avatarEl.alt = walkerName;
+            }
+            if (titleEl) titleEl.textContent = `With ${walkerName}`;
+
+            if (timeEl) {
+                if (upcomingWalk.status === 'In Progress') {
+                    timeEl.textContent = 'In progress now';
+                } else if (upcomingWalk.date) {
+                    const dateObj = new Date(`${upcomingWalk.date}T${upcomingWalk.time || '00:00'}`);
+                    if (!Number.isNaN(dateObj.valueOf())) {
+                        const now = new Date();
+                        const sameDay = dateObj.toDateString() === now.toDateString();
+                        const dateLabel = sameDay ? 'Today' : dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                        const timeLabel = upcomingWalk.time ? dateObj.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }) : '';
+                        timeEl.textContent = timeLabel ? `${dateLabel} at ${timeLabel}` : dateLabel;
+                    } else {
+                        timeEl.textContent = 'Scheduled';
+                    }
+                } else {
+                    timeEl.textContent = 'Scheduled';
+                }
+            }
+
+            if (durationEl) durationEl.textContent = upcomingWalk.duration ? `${upcomingWalk.duration} min` : 'Walk scheduled';
+            if (dogsEl) {
+                const dogLabels = (upcomingWalk.dogs || []).map(dog => dog.avatar || dog.name).join(' ');
+                dogsEl.textContent = dogLabels || '🐾';
+            }
+
+            upcomingCard.onclick = () => goToPage('page-live-tracking', { walkId: upcomingWalk.id });
+            upcomingCard.style.cursor = 'pointer';
+        } else {
+            upcomingSection.style.display = 'none';
+            upcomingCard.onclick = null;
+            upcomingCard.style.cursor = 'default';
+        }
     }
+
     document.getElementById('recent-activity-list').innerHTML = walkHistoryData.filter(w => w.status === 'Completed').slice(0, 2).map(walk => `
         <div class="glass-card p-3 flex items-center gap-3">
             <img src="${walk.walker.avatar}" class="w-10 h-10 rounded-full">
@@ -345,7 +409,16 @@ function fullInitBookingFlow() {
         document.body.insertAdjacentHTML('beforeend', modalHTML);
         document.getElementById('modal-back-to-home').addEventListener('click', () => {
             document.getElementById('successModal').remove();
-            const newWalk = { id: Date.now(), date: bookingState.dateTime.date, walker: bookingState.selectedWalker, dogs: bookingState.selectedDogs, price: bookingState.total, status: 'Upcoming' };
+            const newWalk = {
+                id: Date.now(),
+                date: bookingState.dateTime.date,
+                time: bookingState.dateTime.time,
+                duration: bookingState.service?.duration,
+                walker: bookingState.selectedWalker,
+                dogs: bookingState.selectedDogs,
+                price: bookingState.total,
+                status: 'Upcoming'
+            };
             walkHistoryData.unshift(newWalk);
             goToPage('page-home');
         });
@@ -418,9 +491,12 @@ function fullInitBookingFlow() {
 
     // Init Screen 3
     function renderReviewScreen() {
-        bookingState.total = bookingState.selectedWalker.price;
+        const servicePrice = bookingState?.service?.price || 0;
+        const serviceDuration = bookingState?.service?.duration;
+        bookingState.total = servicePrice;
         document.getElementById('summary-details').innerHTML = `<div class="py-2 flex justify-between"><span>Date & Time</span><span class="text-right font-semibold">${bookingState.dateTime.date} at ${bookingState.dateTime.time}</span></div> <div class="py-2 flex justify-between"><span>Dogs</span><span class="text-right font-semibold">${bookingState.selectedDogs.map(d=>d.name).join(', ')}</span></div> <div class="py-2 flex justify-between"><span>Walker</span><span class="text-right font-semibold">${bookingState.selectedWalker.name}</span></div>`;
-        document.getElementById('price-details').innerHTML = `<div class="py-2 flex justify-between"><span>Walk Price</span> <span>$${bookingState.total.toFixed(2)}</span></div>`;
+        const serviceLabel = serviceDuration ? `${serviceDuration} min walk` : 'Walk Price';
+        document.getElementById('price-details').innerHTML = `<div class="py-2 flex justify-between"><span>${serviceLabel}</span> <span>$${bookingState.total.toFixed(2)}</span></div>`;
         document.getElementById('total-price').textContent = `$${bookingState.total.toFixed(2)}`;
     }
 
