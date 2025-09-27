@@ -1,20 +1,20 @@
 document.addEventListener('DOMContentLoaded', () => {
 // --- MOCK DATA ---
 let dogData = [
-    { id: 1, name: 'Buddy', avatar: '🐶', breed: 'Golden Retriever', age: 4, notes: 'Loves fetch, avoids loud noises.', vet: 'Parkside Vet Clinic', allergies: 'None', likes: 'Squeaky toys', dislikes: 'Skateboards' },
-    { id: 2, name: 'Lucy', avatar: '🐩', breed: 'Poodle', age: 7, notes: 'A bit shy at first. Prefers quiet streets.', vet: 'Uptown Animals', allergies: 'Chicken', likes: 'Belly rubs', dislikes: 'Loud trucks' },
-    { id: 3, name: 'Max', avatar: '🐕', breed: 'German Shepherd', age: 2, notes: 'Very energetic! Needs a long run.', vet: 'Parkside Vet Clinic', allergies: 'None', likes: 'Frisbees', dislikes: 'Mail carriers' },
+    { id: 1, name: 'Buddy', avatar: '🐶', breed: 'Golden Retriever', age: 4, notes: 'Loves foggy morning jogs, prefers reflective harness.', vet: 'Parkside Vet Clinic', allergies: 'None', likes: 'Squeaky toys', dislikes: 'Skateboards' },
+    { id: 2, name: 'Lucy', avatar: '🐩', breed: 'Poodle', age: 7, notes: 'Shy at first. Responds well to calm breathing cues.', vet: 'Uptown Animals', allergies: 'Chicken', likes: 'Belly rubs', dislikes: 'Loud trucks' },
+    { id: 3, name: 'Max', avatar: '🐕', breed: 'German Shepherd', age: 2, notes: 'Very energetic! Needs a long run and trail sniff stops.', vet: 'Parkside Vet Clinic', allergies: 'None', likes: 'Frisbees', dislikes: 'Mail carriers' },
 ];
 const walkerData = [
-    { id: 1, name: 'Alex Ray', avatar: 'https://placehold.co/100x100/7F00FF/FFFFFF?text=A', verified: true, rating: 4.9, reviews: 124, price: 25, bio: "Hi, I'm Alex! I've been a passionate dog lover my whole life and have 5+ years of professional walking experience. I'm certified in Pet First Aid and can't wait to meet your furry friend!", badges: ["Pet CPR Certified", "5+ Years Exp."], favorite: true },
-    { id: 2, name: 'Jordan Lee', avatar: 'https://placehold.co/100x100/8A2BE2/FFFFFF?text=J', verified: true, rating: 4.8, reviews: 98, price: 24, bio: "Jordan is a marathon runner who loves taking high-energy dogs on long adventures. If your pup needs to burn off some steam, I'm your walker.", badges: ["Great with Large Dogs"], favorite: false },
-    { id: 3, name: 'Casey Smith', avatar: 'https://placehold.co/100x100/9370DB/FFFFFF?text=C', verified: false, rating: 4.7, reviews: 75, price: 22, bio: "As a veterinary student, I have a deep understanding of animal care and behavior. I'm especially good with shy or anxious dogs.", badges: ["Experience with Puppies"], favorite: true },
+    { id: 1, name: 'Alex Ray', avatar: 'https://images.unsplash.com/photo-1612833608781-1d7e64496459?auto=format&fit=crop&w=200&q=60', verified: true, rating: 4.9, reviews: 124, price: 25, bio: "Hi, I'm Alex! I've been a passionate dog lover my whole life and have 5+ years of professional walking experience. I'm certified in Pet First Aid and can't wait to meet your furry friend!", badges: ["Pet CPR Certified", "5+ Years Exp."], favorite: true },
+    { id: 2, name: 'Jordan Lee', avatar: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=200&q=60', verified: true, rating: 4.8, reviews: 98, price: 24, bio: "Jordan is a marathon runner who loves taking high-energy dogs on long adventures. If your pup needs to burn off some steam, I'm your walker.", badges: ["Great with Large Dogs"], favorite: false },
+    { id: 3, name: 'Casey Smith', avatar: 'https://images.unsplash.com/photo-1521579971123-1192931a1452?auto=format&fit=crop&w=200&q=60', verified: false, rating: 4.7, reviews: 75, price: 22, bio: "As a veterinary student, I have a deep understanding of animal care and behavior. I'm especially good with shy or anxious dogs.", badges: ["Experience with Puppies"], favorite: true },
 ];
 let walkHistoryData = [
-    { id: 99, date: '2025-09-16', time: '16:00', duration: 30, walker: walkerData[1], dogs: [dogData[0]], price: 25.00, status: 'In Progress' },
-    { id: 1, date: '2025-09-11', walker: walkerData[1], dogs: [dogData[0]], price: 25.00, status: 'Completed', photos: ['https://placehold.co/300x200/5f3781/FFFFFF?text=Buddy+Playing', 'https://placehold.co/300x200/8A2BE2/FFFFFF?text=Happy+Pup'], activity: { pee: true, poo: true, water: true }, note: "Buddy had a great time at the park. Full of energy today!" },
-    { id: 2, date: '2025-09-09', walker: walkerData[0], dogs: [dogData[0], dogData[1]], price: 40.00, status: 'Completed', photos: [], activity: { pee: true, poo: false, water: true }, note: "Lucy was a little shy but warmed up. Buddy was great as always." },
-    { id: 3, date: '2025-09-05', walker: walkerData[2], dogs: [dogData[2]], price: 22.00, status: 'Completed', photos: ['https://placehold.co/300x200/9370DB/FFFFFF?text=Max+Running'], activity: { pee: true, poo: true, water: false }, note: "Max loved the long run by the lake!" },
+    { id: 99, date: '2025-09-16', time: '16:00', duration: 30, route: 'Dogpatch Loop', walker: walkerData[1], dogs: [dogData[0]], price: 25.00, status: 'In Progress' },
+    { id: 1, date: '2025-09-11', walker: walkerData[1], dogs: [dogData[0]], route: 'Waterfront Promenade', price: 25.00, status: 'Completed', photos: ['https://placehold.co/300x200/334155/FFFFFF?text=Buddy+Playing', 'https://placehold.co/300x200/415a77/FFFFFF?text=Happy+Pup'], activity: { pee: true, poo: true, water: true }, note: "Buddy had a great time at the park. Full of energy today!" },
+    { id: 2, date: '2025-09-09', walker: walkerData[0], dogs: [dogData[0], dogData[1]], route: 'Mission Greenway', price: 40.00, status: 'Completed', photos: [], activity: { pee: true, poo: false, water: true }, note: "Lucy was a little shy but warmed up. Buddy was great as always." },
+    { id: 3, date: '2025-09-05', walker: walkerData[2], dogs: [dogData[2]], route: 'Sunrise Ridge', price: 22.00, status: 'Completed', photos: ['https://placehold.co/300x200/1d2d44/FFFFFF?text=Max+Running'], activity: { pee: true, poo: true, water: false }, note: "Max loved the long run by the lake!" },
 ];
 const inboxData = [
     { id: 1, walkerId: 1, lastMessage: "Sounds good, see you then!", unread: false },
@@ -28,6 +28,124 @@ const paymentData = {
     card: { type: 'Visa', last4: '4242', expiry: '12/26'},
     transactions: [{date: '2025-09-11', desc: 'Walk with Jordan L.', amount: 25.00}, {date: '2025-09-09', desc: 'Walk with Alex R.', amount: 40.00}]
 };
+
+const weatherSnapshot = {
+    location: 'Dogpatch, SF',
+    mood: 'Gentle mist',
+    temperature: 58,
+    updatedAgo: '3 minutes ago',
+    heroMetrics: [
+        { label: 'Visibility', value: '1.2 mi' },
+        { label: 'Fog index', value: '62 / 100' },
+        { label: 'Feels like', value: '56°' },
+    ],
+    details: [
+        { label: 'Humidity', value: '92%' },
+        { label: 'Wind', value: '4 mph NE' },
+        { label: 'Sunrise', value: '6:43 AM' },
+        { label: 'UV', value: 'Low (2)' },
+    ],
+    narrative: 'Low tide fog hugging the waterfront. Keep Buddy’s reflective harness on for the first 10 minutes.',
+};
+
+const quickActionConfig = [
+    {
+        id: 'book',
+        title: 'Book a FogWalk',
+        description: 'Schedule a Strava-inspired route built for misty mornings.',
+        icon: '<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>',
+        action: 'booking',
+    },
+    {
+        id: 'care-notes',
+        title: 'Update care notes',
+        description: 'Log meds and harness reminders before hand-off.',
+        icon: '<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z"/><polyline points="17 21 17 13 7 13 7 21"/><line x1="7" y1="3" x2="7" y2="8"/></svg>',
+        action: 'dogs',
+    },
+    {
+        id: 'safety',
+        title: 'Fog safety checklist',
+        description: 'Headspace-style breathing and visibility tips.',
+        icon: '<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m9 12 2 2 4-4"/></svg>',
+        action: 'checklist',
+    },
+];
+
+const routeSpotlights = [
+    {
+        id: 'waterfront',
+        name: 'Waterfront Promenade',
+        distance: '2.4 mi',
+        terrain: 'Boardwalk · Flat',
+        highlight: 'Apple Weather-inspired fog layers hug the bay.',
+        bestFor: 'Calm mornings',
+    },
+    {
+        id: 'sunrise-ridge',
+        name: 'Sunrise Ridge Loop',
+        distance: '3.1 mi',
+        terrain: 'Trail · Moderate',
+        highlight: 'Nike Run Club stats show 320 ft elevation gain.',
+        bestFor: 'Energy burners',
+    },
+    {
+        id: 'mission-green',
+        name: 'Mission Greenway',
+        distance: '1.8 mi',
+        terrain: 'City · Low Traffic',
+        highlight: 'Strava heatmaps signal fewer cyclists before 8 AM.',
+        bestFor: 'Shy pups',
+    },
+];
+
+const careInsights = [
+    {
+        title: 'Pre-walk calm routine',
+        copy: 'Try Calm’s two-minute box breathing audio to settle anxious pups before leashing up.',
+    },
+    {
+        title: 'Visibility gear check',
+        copy: 'Switch to the amber LED collar whenever the fog index climbs above 60 to mirror Nike Run Club safety standards.',
+    },
+    {
+        title: 'Post-walk recovery',
+        copy: 'Strava-style prompts remind walkers to log hydration and paw checks after routes longer than 2 miles.',
+    },
+];
+
+const onboardingSlides = [
+    {
+        eyebrow: 'Welcome',
+        title: 'Walk through the fog with confidence',
+        copy: 'FogWalk layers Apple Weather-style forecasts with trusted walkers so every outing stays calm and safe.',
+        metric: { icon: '🌫️', text: 'Live visibility index tailored to your neighborhood' },
+    },
+    {
+        eyebrow: 'Trusted Guides',
+        title: 'Meet walkers vetted like Rover pros',
+        copy: 'Every DogWalk guide is background checked, Pet CPR certified, and rated 4.8★ or higher by nearby neighbors.',
+        metric: { icon: '🛡️', text: '92% of owners rebook their first walker' },
+    },
+    {
+        eyebrow: 'Immersive Tracking',
+        title: 'See the route, weather, and photos in real time',
+        copy: 'Strava-inspired dashboards track progress while fog alerts nudge you to share check-ins instantly.',
+        metric: { icon: '📡', text: 'Live map with safety checkpoints every 10 minutes' },
+    },
+    {
+        eyebrow: 'Personal Care',
+        title: 'Tailor every walk to your companion',
+        copy: 'Headspace-like guidance keeps shy pups at ease with breathing cues, playlists, and personalized pace settings.',
+        metric: { icon: '💛', text: 'Add care cards for meds, harness fit, and favorite treats' },
+    },
+    {
+        eyebrow: 'Ready to explore',
+        title: 'Book your first FogWalk in under two minutes',
+        copy: 'Choose a route, align schedules, and enjoy post-walk photo stories—your city’s mist has never felt friendlier.',
+        metric: { icon: '🚶‍♀️', text: 'Launch booking now and save your preferred route' },
+    },
+];
 
 // --- APP STATE ---
 const appState = { currentPage: 'page-home' };
@@ -156,32 +274,69 @@ function launchBookingFlow(source = 'nav') {
 function vibrate(duration = 10) { if (window.navigator.vibrate) window.navigator.vibrate(duration); }
 
 function renderDashboard() {
-    const upcomingSection = document.getElementById('upcoming-walk-section');
-    const upcomingCard = document.getElementById('upcoming-walk-card');
-    if (upcomingSection && upcomingCard) {
-        const statusPriority = { 'In Progress': 0, 'Upcoming': 1 };
-        const sortByDate = (a, b) => {
-            if (a.date && b.date) {
-                const timeA = new Date(`${a.date}T${a.time || '00:00'}`);
-                const timeB = new Date(`${b.date}T${b.time || '00:00'}`);
-                if (!Number.isNaN(timeA.valueOf()) && !Number.isNaN(timeB.valueOf())) {
-                    return timeA - timeB;
-                }
+    const heroTitle = document.getElementById('home-hero-title');
+    const heroSubtitle = document.getElementById('home-hero-subtitle');
+    const heroEyebrow = document.getElementById('home-hero-eyebrow');
+    const heroConditions = document.getElementById('home-hero-conditions');
+
+    const hours = new Date().getHours();
+    const greeting = hours < 12 ? 'Good morning' : hours < 18 ? 'Good afternoon' : 'Good evening';
+    if (heroTitle) heroTitle.textContent = `${greeting}, Alex`;
+    if (heroEyebrow) heroEyebrow.textContent = `${weatherSnapshot.mood} • ${weatherSnapshot.location}`;
+
+    const statusPriority = { 'In Progress': 0, 'Upcoming': 1 };
+    const sortByDate = (a, b) => {
+        if (a.date && b.date) {
+            const timeA = new Date(`${a.date}T${a.time || '00:00'}`);
+            const timeB = new Date(`${b.date}T${b.time || '00:00'}`);
+            if (!Number.isNaN(timeA.valueOf()) && !Number.isNaN(timeB.valueOf())) {
+                return timeA - timeB;
             }
-            return 0;
-        };
-        const upcomingWalk = walkHistoryData
-            .filter(walk => ['In Progress', 'Upcoming'].includes(walk.status))
-            .sort((a, b) => {
-                const statusDiff = (statusPriority[a.status] ?? 2) - (statusPriority[b.status] ?? 2);
-                if (statusDiff !== 0) return statusDiff;
-                return sortByDate(a, b);
-            })[0];
+        }
+        return 0;
+    };
 
+    const upcomingWalk = walkHistoryData
+        .filter(walk => ['In Progress', 'Upcoming'].includes(walk.status))
+        .sort((a, b) => {
+            const statusDiff = (statusPriority[a.status] ?? 2) - (statusPriority[b.status] ?? 2);
+            if (statusDiff !== 0) return statusDiff;
+            return sortByDate(a, b);
+        })[0];
+
+    if (heroSubtitle) {
         if (upcomingWalk) {
-            upcomingSection.style.display = 'block';
-            upcomingCard.dataset.walkId = upcomingWalk.id;
+            const dateObj = upcomingWalk.date ? new Date(`${upcomingWalk.date}T${upcomingWalk.time || '00:00'}`) : null;
+            const now = new Date();
+            let timeLabel = 'soon';
+            if (dateObj && !Number.isNaN(dateObj.valueOf())) {
+                const sameDay = dateObj.toDateString() === now.toDateString();
+                const dateLabel = sameDay ? 'today' : dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                const timeText = upcomingWalk.time ? dateObj.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }) : '';
+                timeLabel = timeText ? `${dateLabel} at ${timeText}` : dateLabel;
+            }
+            const dogsLabel = (upcomingWalk.dogs || []).map(d => d.name).join(' & ') || 'your pup';
+            const walkerName = upcomingWalk.walker?.name || 'your walker';
+            heroSubtitle.textContent = `${walkerName} meets ${dogsLabel} ${timeLabel}. ${weatherSnapshot.narrative}`;
+        } else {
+            heroSubtitle.textContent = weatherSnapshot.narrative;
+        }
+    }
 
+    if (heroConditions) {
+        heroConditions.innerHTML = weatherSnapshot.heroMetrics.map(metric => `
+            <div class="home-hero-condition">
+                <span class="label">${metric.label}</span>
+                <span class="value">${metric.value}</span>
+            </div>
+        `).join('');
+    }
+
+    const upcomingCard = document.getElementById('upcoming-walk-card');
+    if (upcomingCard) {
+        if (upcomingWalk) {
+            upcomingCard.style.display = '';
+            upcomingCard.dataset.walkId = upcomingWalk.id;
             const avatarEl = document.getElementById('upcoming-walk-avatar');
             const titleEl = document.getElementById('upcoming-walk-title');
             const timeEl = document.getElementById('upcoming-walk-time');
@@ -189,8 +344,8 @@ function renderDashboard() {
             const dogsEl = document.getElementById('upcoming-walk-dogs');
 
             const walkerName = upcomingWalk.walker?.name || 'Your walker';
-            if (avatarEl) {
-                if (upcomingWalk.walker?.avatar) avatarEl.src = upcomingWalk.walker.avatar;
+            if (avatarEl && upcomingWalk.walker?.avatar) {
+                avatarEl.src = upcomingWalk.walker.avatar;
                 avatarEl.alt = walkerName;
             }
             if (titleEl) titleEl.textContent = `With ${walkerName}`;
@@ -205,28 +360,101 @@ function renderDashboard() {
                         const sameDay = dateObj.toDateString() === now.toDateString();
                         const dateLabel = sameDay ? 'Today' : dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
                         const timeLabel = upcomingWalk.time ? dateObj.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }) : '';
-                        timeEl.textContent = timeLabel ? `${dateLabel} at ${timeLabel}` : dateLabel;
+                        const routeLabel = upcomingWalk.route ? ` · ${upcomingWalk.route}` : '';
+                        timeEl.textContent = timeLabel ? `${dateLabel} at ${timeLabel}${routeLabel}` : `${dateLabel}${routeLabel}`;
                     } else {
-                        timeEl.textContent = 'Scheduled';
+                        timeEl.textContent = upcomingWalk.route || 'Scheduled';
                     }
                 } else {
-                    timeEl.textContent = 'Scheduled';
+                    timeEl.textContent = upcomingWalk.route || 'Scheduled';
                 }
             }
 
             if (durationEl) durationEl.textContent = upcomingWalk.duration ? `${upcomingWalk.duration} min` : 'Walk scheduled';
             if (dogsEl) {
-                const dogLabels = (upcomingWalk.dogs || []).map(dog => dog.avatar || dog.name).join(' ');
-                dogsEl.textContent = dogLabels || '🐾';
+                const dogLabels = (upcomingWalk.dogs || []).map(dog => dog.name).join(', ');
+                dogsEl.textContent = dogLabels || 'Buddy';
             }
 
             upcomingCard.onclick = () => goToPage('page-live-tracking', { walkId: upcomingWalk.id });
             upcomingCard.style.cursor = 'pointer';
         } else {
-            upcomingSection.style.display = 'none';
+            upcomingCard.style.display = 'none';
             upcomingCard.onclick = null;
             upcomingCard.style.cursor = 'default';
         }
+    }
+
+    const panelOpenBooking = document.getElementById('panel-open-booking');
+    if (panelOpenBooking) panelOpenBooking.onclick = () => launchBookingFlow('home-upcoming-adjust');
+
+    const weatherTemp = document.getElementById('weather-temp');
+    if (weatherTemp) weatherTemp.textContent = `${weatherSnapshot.temperature}°`;
+    const weatherMood = document.getElementById('weather-mood');
+    if (weatherMood) weatherMood.textContent = weatherSnapshot.mood;
+    const weatherLocation = document.getElementById('weather-location');
+    if (weatherLocation) weatherLocation.textContent = weatherSnapshot.location;
+    const weatherUpdated = document.getElementById('weather-updated-at');
+    if (weatherUpdated) weatherUpdated.textContent = `Updated ${weatherSnapshot.updatedAgo}`;
+    const weatherGrid = document.getElementById('weather-grid');
+    if (weatherGrid) {
+        weatherGrid.innerHTML = weatherSnapshot.details.map(detail => `
+            <div>
+                <dt>${detail.label}</dt>
+                <dd>${detail.value}</dd>
+            </div>
+        `).join('');
+    }
+
+    const quickActionsContainer = document.getElementById('home-quick-actions');
+    if (quickActionsContainer) {
+        quickActionsContainer.innerHTML = quickActionConfig.map(action => `
+            <button type="button" class="quick-action-card" data-action="${action.action}">
+                <span class="quick-action-icon">${action.icon}</span>
+                <div class="quick-action-meta">
+                    <h3>${action.title}</h3>
+                    <p>${action.description}</p>
+                </div>
+            </button>
+        `).join('');
+        quickActionsContainer.querySelectorAll('[data-action]').forEach(btn => {
+            btn.addEventListener('click', () => handleDashboardAction(btn.dataset.action));
+        });
+    }
+
+    const routeList = document.getElementById('home-route-list');
+    if (routeList) {
+        routeList.innerHTML = routeSpotlights.map(route => `
+            <article class="route-card" data-route="${route.id}">
+                <div class="route-card-header">
+                    <div>
+                        <h3 class="route-name">${route.name}</h3>
+                        <div class="route-meta"><span>${route.distance}</span><span>${route.terrain}</span></div>
+                    </div>
+                    <span class="route-pill">${route.bestFor}</span>
+                </div>
+                <div class="route-card-footer">
+                    <span>${route.highlight}</span>
+                    <button type="button" class="panel-link route-select" data-route="${route.id}">Preview</button>
+                </div>
+            </article>
+        `).join('');
+        routeList.querySelectorAll('.route-select').forEach(btn => {
+            btn.addEventListener('click', e => {
+                e.preventDefault();
+                previewRoute(btn.dataset.route);
+            });
+        });
+    }
+
+    const insightGrid = document.getElementById('home-insight-grid');
+    if (insightGrid) {
+        insightGrid.innerHTML = careInsights.map(insight => `
+            <article class="insight-card">
+                <h3>${insight.title}</h3>
+                <p>${insight.copy}</p>
+            </article>
+        `).join('');
     }
 
     const completedWalks = walkHistoryData
@@ -235,18 +463,59 @@ function renderDashboard() {
 
     const recentActivityList = document.getElementById('recent-activity-list');
     if (recentActivityList) {
-        const recentWalks = completedWalks.slice(0, 2);
+        const recentWalks = completedWalks.slice(0, 3);
         recentActivityList.innerHTML = recentWalks.map(walk => `
-            <div class="glass-card p-3 flex items-center gap-3">
-                <img src="${walk.walker.avatar}" class="w-10 h-10 rounded-full" alt="${walk.walker.name}">
-                <div>
-                    <p class="font-semibold">Walk with ${walk.walker.name}</p>
-                    <p class="text-xs opacity-70">${new Date(walk.date + 'T00:00:00').toLocaleDateString()}</p>
+            <article class="glass-card p-4 flex items-start gap-3 recent-activity" data-walk-id="${walk.id}">
+                <img src="${walk.walker.avatar}" class="w-12 h-12 rounded-xl object-cover" alt="${walk.walker.name}">
+                <div class="flex-1">
+                    <p class="font-semibold">${walk.route || 'Neighborhood walk'}</p>
+                    <p class="text-xs opacity-70">${new Date(walk.date + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} • ${walk.walker.name}</p>
                 </div>
-                <span class="ml-auto font-bold text-sm">$${walk.price.toFixed(2)}</span>
-            </div>`).join('');
+                <span class="font-bold text-sm">$${walk.price.toFixed(2)}</span>
+            </article>
+        `).join('');
+        recentActivityList.querySelectorAll('.recent-activity').forEach(card => {
+            card.addEventListener('click', () => goToPage('page-walk-summary', { walkId: parseInt(card.dataset.walkId, 10) }));
+        });
     }
 
+    const heroBookBtn = document.getElementById('hero-book-btn');
+    if (heroBookBtn) heroBookBtn.onclick = () => launchBookingFlow('home-hero');
+    const heroChecklistBtn = document.getElementById('hero-checklist-btn');
+    if (heroChecklistBtn) heroChecklistBtn.onclick = showFogChecklist;
+}
+
+function handleDashboardAction(action) {
+    switch (action) {
+        case 'booking':
+            launchBookingFlow('home-quick-action');
+            break;
+        case 'dogs':
+            goToPage('page-dogs');
+            break;
+        case 'checklist':
+            showFogChecklist();
+            break;
+        default:
+            break;
+    }
+}
+
+function previewRoute(routeId) {
+    const route = routeSpotlights.find(r => r.id === routeId);
+    if (!route) return;
+    const message = `${route.name}\n${route.distance} • ${route.terrain}\n\n${route.highlight}\n\nTap “Book a FogWalk” to lock this in.`;
+    window.alert(message);
+}
+
+function showFogChecklist() {
+    const checklist = [
+        'Attach reflective harness & LED collar',
+        'Practice Calm-style 4×4 breathing before leaving',
+        'Pack towel for dew + hydration squeeze bottle',
+        'Share live route link with family',
+    ];
+    window.alert(`FogWalk safety checklist:\n\n${checklist.map((item, index) => `${index + 1}. ${item}`).join('\n')}`);
 }
 
 function renderHistoryPage() {
@@ -539,21 +808,43 @@ function initOnboarding() {
     const slidesContainer = document.getElementById('onboarding-slides-container');
     const dotsContainer = document.getElementById('onboarding-dots-container');
     const nextBtn = document.getElementById('onboarding-next-btn');
-    const totalSlides = 3;
+    const backBtn = document.getElementById('onboarding-back-btn');
+    const skipBtn = document.getElementById('onboarding-skip-btn');
+    const progressLabel = document.getElementById('onboarding-progress-label');
+    const totalSlides = onboardingSlides.length;
 
-    for(let i=0; i < totalSlides; i++) {
-        dotsContainer.innerHTML += `<div class="onboarding-dot ${i === 0 ? 'active' : ''}" data-slide="${i}"></div>`;
-    }
-    const dots = dotsContainer.querySelectorAll('.onboarding-dot');
+    if (!slidesContainer || !dotsContainer || !nextBtn || !backBtn || !progressLabel) return;
+
+    slidesContainer.innerHTML = onboardingSlides.map(slide => `
+        <article class="onboarding-slide">
+            <span class="onboarding-eyebrow">${slide.eyebrow}</span>
+            <h2 class="onboarding-title">${slide.title}</h2>
+            <p class="onboarding-copy">${slide.copy}</p>
+            ${slide.metric ? `<div class="onboarding-metric"><span>${slide.metric.icon}</span><span>${slide.metric.text}</span></div>` : ''}
+        </article>
+    `).join('');
+
+    dotsContainer.innerHTML = onboardingSlides.map((_, idx) => `
+        <button class="onboarding-dot ${idx === 0 ? 'active' : ''}" data-slide="${idx}" aria-label="Go to slide ${idx + 1}"></button>
+    `).join('');
+
+    const dots = Array.from(dotsContainer.querySelectorAll('.onboarding-dot'));
 
     function updateOnboardingUI() {
-        slidesContainer.style.transform = `translateX(-${currentSlide * (100 / totalSlides)}%)`;
+        slidesContainer.style.transform = `translateX(-${currentSlide * 100}%)`;
         dots.forEach((dot, i) => dot.classList.toggle('active', i === currentSlide));
-        if (currentSlide === totalSlides - 1) {
-            nextBtn.textContent = 'Get Started';
-        } else {
-            nextBtn.textContent = 'Next';
+        nextBtn.textContent = currentSlide === totalSlides - 1 ? 'Get Started' : 'Next';
+        progressLabel.textContent = `Step ${currentSlide + 1} of ${totalSlides}`;
+        backBtn.disabled = currentSlide === 0;
+    }
+
+    function completeOnboarding() {
+        try {
+            localStorage.setItem('onboardingComplete', 'true');
+        } catch (e) {
+            console.error('Could not set localStorage.', e);
         }
+        goToPage('page-home');
     }
 
     nextBtn.addEventListener('click', () => {
@@ -561,12 +852,30 @@ function initOnboarding() {
             currentSlide++;
             updateOnboardingUI();
         } else {
-            try {
-                localStorage.setItem('onboardingComplete', 'true');
-            } catch(e) { console.error("Could not set localStorage.") }
-            goToPage('page-home');
+            completeOnboarding();
         }
     });
+
+    backBtn.addEventListener('click', () => {
+        if (currentSlide > 0) {
+            currentSlide--;
+            updateOnboardingUI();
+        }
+    });
+
+    dots.forEach(dot => dot.addEventListener('click', () => {
+        const slideIndex = parseInt(dot.dataset.slide, 10);
+        if (!Number.isNaN(slideIndex)) {
+            currentSlide = slideIndex;
+            updateOnboardingUI();
+        }
+    }));
+
+    if (skipBtn) {
+        skipBtn.addEventListener('click', () => completeOnboarding());
+    }
+
+    updateOnboardingUI();
 }
 
 // --- APP INITIALIZATION ---
@@ -609,9 +918,10 @@ document.body.addEventListener('click', e => {
          goToPage(profileLink.dataset.target);
      }
 });
-document.getElementById('cta-book-walk').addEventListener('click', () => launchBookingFlow('home-cta'));
-document.getElementById('cta-recurring-walk').addEventListener('click', () => goToPage('page-recurring-walks'));
-document.getElementById('btn-add-dog').addEventListener('click', () => goToPage('page-dog-form'));
+const addDogButton = document.getElementById('btn-add-dog');
+if (addDogButton) {
+    addDogButton.addEventListener('click', () => goToPage('page-dog-form'));
+}
 
 // Start the app
 initApp();
