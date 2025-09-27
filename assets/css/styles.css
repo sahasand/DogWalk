@@ -135,6 +135,29 @@ body::after {
     color: var(--text-color);
     border: 1px solid var(--glass-border);
 }
+.btn-danger {
+    background: rgba(239, 68, 68, 0.12);
+    color: #fca5a5;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+.btn-danger:hover:not(:disabled) {
+    background: rgba(239, 68, 68, 0.2);
+    color: #fecaca;
+    box-shadow: 0 6px 18px rgba(239, 68, 68, 0.25);
+}
+.hidden { display: none !important; }
+.icon-button {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid var(--glass-border);
+    border-radius: 999px;
+    padding: 0.5rem;
+    color: var(--text-color);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.icon-button:hover {
+    background: rgba(255, 255, 255, 0.16);
+}
 .input-group {
     position: relative;
     background: var(--glass-bg);
@@ -273,6 +296,58 @@ body::after {
 #page-booking-flow .checkable-card input:checked + .card-content { border-color: var(--primary-color-light); box-shadow: 0 0 0 3px rgba(147, 112, 219, 0.4); }
 #page-booking-flow .checkmark { position: absolute; top: 0.75rem; right: 0.75rem; width: 24px; height: 24px; background: rgba(0,0,0,0.3); border-radius: 50%; display: flex; justify-content: center; align-items: center; opacity: 0; transform: scale(0.5); transition: all 0.3s ease; }
 #page-booking-flow .checkable-card input:checked ~ .checkmark { opacity: 1; transform: scale(1); background: var(--primary-color); }
+
+#page-recurring-walks .checkable-card { cursor: pointer; position: relative; text-align: center; }
+#page-recurring-walks .checkable-card input { display: none; }
+#page-recurring-walks .checkable-card .card-content { border: 1px solid var(--glass-border); border-radius: var(--border-radius); transition: all 0.3s ease; }
+#page-recurring-walks .checkable-card input:checked + .card-content { border-color: var(--primary-color-light); box-shadow: 0 0 0 3px rgba(147, 112, 219, 0.4); }
+#page-recurring-walks .checkmark { position: absolute; top: 0.5rem; right: 0.5rem; width: 22px; height: 22px; background: rgba(0,0,0,0.3); border-radius: 50%; display: flex; justify-content: center; align-items: center; opacity: 0; transform: scale(0.5); transition: all 0.3s ease; }
+#page-recurring-walks .checkable-card input:checked ~ .checkmark { opacity: 1; transform: scale(1); background: var(--primary-color); }
+
+#page-recurring-walks .walker-option { cursor: pointer; border: 1px solid var(--glass-border); transition: all 0.2s ease; position: relative; }
+#page-recurring-walks .walker-option input { display: none; }
+#page-recurring-walks .walker-option:hover { border-color: var(--primary-color-light); }
+#page-recurring-walks .walker-option .selection-indicator { opacity: 0; transition: opacity 0.2s ease; }
+#page-recurring-walks .walker-option.selected { border-color: var(--primary-color-light); box-shadow: 0 6px 16px rgba(147, 112, 219, 0.2); }
+#page-recurring-walks .walker-option.selected .selection-indicator { opacity: 1; }
+
+.scheduler-form { animation: fadeIn 0.25s ease; }
+.scheduler-form.active { display: block; }
+.day-picker-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.5rem; }
+.day-toggle {
+    padding: 0.65rem 0.75rem;
+    border-radius: 0.75rem;
+    border: 1px solid var(--glass-border);
+    background: rgba(255,255,255,0.05);
+    color: var(--text-color);
+    font-size: 0.875rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+.day-toggle.active {
+    background: var(--primary-color);
+    border-color: var(--primary-color-light);
+    box-shadow: 0 6px 16px rgba(147, 112, 219, 0.35);
+}
+.day-toggle:focus-visible { outline: 2px solid var(--primary-color-light); outline-offset: 2px; }
+
+.status-badge {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.3rem 0.75rem;
+    border-radius: 999px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+.status-badge--active { background: rgba(34, 197, 94, 0.18); color: #bbf7d0; border: 1px solid rgba(34, 197, 94, 0.35); }
+.status-badge--paused { background: rgba(234, 179, 8, 0.18); color: #fde68a; border: 1px solid rgba(234, 179, 8, 0.35); }
+
+.recurring-plan-card .btn { min-height: 44px; }
+.recurring-plan-card .next-occurrence { font-weight: 600; color: #c4b5fd; }
+
+@media (min-width: 480px) {
+    .day-picker-grid { grid-template-columns: repeat(7, minmax(0, 1fr)); }
+}
 
 /* Chat Page Styles */
 #page-chat .chat-bubble { max-width: 75%; padding: 0.75rem 1rem; border-radius: 1.25rem; }
