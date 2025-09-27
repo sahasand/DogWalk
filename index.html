@@ -3,39 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>FogWalk – Modern Dog Walking Companion</title>
+    <title>Walkies - Dog Walking App</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Playfair+Display:wght@500;600&display=swap" rel="stylesheet">
-
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
     <link rel="stylesheet" href="assets/css/styles.css">
 </head>
 <body>
+
     <div id="page-onboarding" class="page">
-        <div class="onboarding-shell">
-            <header class="onboarding-header">
-                <div class="onboarding-logo">FogWalk</div>
-                <button id="onboarding-skip-btn" class="onboarding-link">Skip</button>
-            </header>
-            <div class="onboarding-stage">
-                <div class="fog-canvas">
-                    <div class="fog-layer fog-layer-1"></div>
-                    <div class="fog-layer fog-layer-2"></div>
-                    <div class="fog-layer fog-layer-3"></div>
+        <div style="width:100vw; overflow:hidden;">
+            <div class="onboarding-slides" id="onboarding-slides-container">
+                <div class="onboarding-slide">
+                    <div class="onboarding-icon"><svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/><path d="m16 14-4 4-2-2"/></svg></div>
+                    <h2 class="text-2xl font-bold">Plan the Perfect Walk</h2>
+                    <p class="opacity-80">Easily schedule walks that fit your and your dog's needs.</p>
                 </div>
-                <div class="onboarding-slides" id="onboarding-slides-container"></div>
+                <div class="onboarding-slide">
+                    <div class="onboarding-icon"><svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+                    <h2 class="text-2xl font-bold">Choose a Trusted Walker</h2>
+                    <p class="opacity-80">Select from a list of verified, top-rated walkers in your area.</p>
+                </div>
+                <div class="onboarding-slide">
+                    <div class="onboarding-icon"><svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path><circle cx="12" cy="10" r="3"></circle></svg></div>
+                    <h2 class="text-2xl font-bold">Track Every Step</h2>
+                    <p class="opacity-80">Follow along with live GPS tracking and get photo updates.</p>
+                </div>
             </div>
-            <footer class="onboarding-footer">
-                <div class="onboarding-progress">
-                    <span id="onboarding-progress-label" class="onboarding-progress-label">Step 1 of 5</span>
-                    <div class="onboarding-dots" id="onboarding-dots-container"></div>
-                </div>
-                <div class="onboarding-controls">
-                    <button id="onboarding-back-btn" class="btn btn-secondary onboarding-back" type="button">Back</button>
-                    <button id="onboarding-next-btn" class="btn btn-primary onboarding-next" type="button">Next</button>
-                </div>
-            </footer>
+        </div>
+        <div class="onboarding-dots" id="onboarding-dots-container"></div>
+        <div class="mt-8 px-8 w-full max-w-sm">
+            <button id="onboarding-next-btn" class="btn btn-primary w-full">Next</button>
         </div>
     </div>
     
@@ -46,100 +46,38 @@
 
                 <!-- ===== PAGE: HOME/DASHBOARD ===== -->
                 <section class="page" id="page-home">
-                    <div class="space-y-10 stagger-in">
-                        <header class="home-hero glass-card" id="home-hero-card">
-                            <div class="home-hero-content">
-                                <div class="home-hero-copy">
-                                    <span class="eyebrow" id="home-hero-eyebrow">Morning Mist</span>
-                                    <h1 class="home-hero-title" id="home-hero-title">Good morning, Alex</h1>
-                                    <p class="home-hero-subtitle" id="home-hero-subtitle">Jordan meets Buddy at 4:00 PM. Visibility is gentle across Dogpatch.</p>
+                    <div class="space-y-8 stagger-in">
+                        <div class="text-center pt-4">
+                            <h1 class="text-3xl font-bold">Hello, Alex!</h1>
+                            <p class="opacity-80">Ready for a new adventure? 🐾</p>
+                        </div>
+                        
+                        <div id="upcoming-walk-section">
+                            <h2 class="text-lg font-semibold mb-3">Upcoming Walk</h2>
+                            <div id="upcoming-walk-card" class="glass-card p-4 flex items-center gap-4 cursor-pointer" data-walk-id="99">
+                                <img id="upcoming-walk-avatar" src="https://placehold.co/100x100/7F00FF/FFFFFF?text=J" alt="Jordan Lee" class="w-12 h-12 rounded-full">
+                                <div>
+                                    <p class="font-semibold" id="upcoming-walk-title">With Jordan Lee</p>
+                                    <p class="text-sm opacity-80" id="upcoming-walk-time">Today at 4:00 PM</p>
                                 </div>
-                                <div class="home-hero-conditions" id="home-hero-conditions">
-                                    <!-- populated via JS -->
+                                <div class="ml-auto text-right">
+                                    <p class="font-bold" id="upcoming-walk-duration">30 min</p>
+                                    <p class="text-sm opacity-80" id="upcoming-walk-dogs">🐶 Buddy</p>
                                 </div>
                             </div>
-                            <div class="home-hero-actions">
-                                <button class="btn btn-primary hero-primary-cta" id="hero-book-btn">Book a FogWalk</button>
-                                <button class="btn btn-secondary hero-secondary-cta" id="hero-checklist-btn">View Fog Checklist</button>
-                            </div>
-                        </header>
-
-                        <div class="home-panels">
-                            <article class="glass-card home-panel" id="upcoming-walk-card" data-walk-id="99">
-                                <div class="home-panel-header">
-                                    <span class="panel-label">Next FogWalk</span>
-                                    <button class="panel-link" id="panel-open-booking" type="button">Adjust</button>
-                                </div>
-                                <div class="home-panel-body">
-                                    <img id="upcoming-walk-avatar" src="https://images.unsplash.com/photo-1548199973-03cce0bbc87b?auto=format&fit=crop&w=200&q=60" alt="Jordan Lee" class="home-panel-avatar">
-                                    <div class="home-panel-meta">
-                                        <h3 id="upcoming-walk-title">With Jordan Lee</h3>
-                                        <p id="upcoming-walk-time">Today at 4:00 PM · Dogpatch Loop</p>
-                                    </div>
-                                    <dl class="home-panel-stats">
-                                        <div>
-                                            <dt>Duration</dt>
-                                            <dd id="upcoming-walk-duration">30 min</dd>
-                                        </div>
-                                        <div>
-                                            <dt>Companions</dt>
-                                            <dd id="upcoming-walk-dogs">Buddy</dd>
-                                        </div>
-                                    </dl>
-                                </div>
-                            </article>
-
-                            <article class="glass-card home-panel" id="home-weather-card">
-                                <div class="home-panel-header">
-                                    <span class="panel-label">FogCast</span>
-                                    <span class="panel-pill" id="weather-updated-at">Updated just now</span>
-                                </div>
-                                <div class="home-panel-body home-weather-body">
-                                    <div class="weather-hero">
-                                        <span class="weather-temp" id="weather-temp">58°</span>
-                                        <div class="weather-details">
-                                            <p class="weather-mood" id="weather-mood">Gentle mist</p>
-                                            <p class="weather-location" id="weather-location">Dogpatch, SF</p>
-                                        </div>
-                                    </div>
-                                    <dl class="weather-grid" id="weather-grid">
-                                        <!-- populated via JS -->
-                                    </dl>
-                                </div>
-                            </article>
                         </div>
 
-                        <section>
-                            <div class="section-header">
-                                <h2>Quick actions</h2>
-                                <span class="section-subtitle">Inspired by Nike Run Club's focused CTAs</span>
-                            </div>
-                            <div class="home-quick-actions" id="home-quick-actions"></div>
-                        </section>
+                        <div class="grid grid-cols-2 gap-4">
+                             <button id="cta-book-walk" class="btn btn-primary w-full text-base py-4">Book New Walk</button>
+                             <button id="cta-recurring-walk" class="btn btn-secondary w-full text-base py-4">Schedule Walk</button>
+                        </div>
 
-                        <section>
-                            <div class="section-header">
-                                <h2>Route spotlights</h2>
-                                <span class="section-subtitle">Curated with Strava-style insights</span>
-                            </div>
-                            <div class="home-route-list" id="home-route-list"></div>
-                        </section>
-
-                        <section>
-                            <div class="section-header">
-                                <h2>Care insights</h2>
-                                <span class="section-subtitle">Headspace-like nudges for calm walks</span>
-                            </div>
-                            <div class="home-insight-grid" id="home-insight-grid"></div>
-                        </section>
-
-                        <section>
-                             <div class="section-header">
-                                 <h2>Recent activity</h2>
-                                 <span class="section-subtitle">Stay close to every step</span>
-                             </div>
+                        <div>
+                             <h2 class="text-lg font-semibold mb-3">Recent Activity</h2>
                              <div class="space-y-3" id="recent-activity-list"></div>
-                        </section>
+                        </div>
+
+                        
                     </div>
                 </section>
                 
