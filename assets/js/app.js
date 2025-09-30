@@ -377,15 +377,30 @@ function renderDashboard() {
     const recentActivityList = document.getElementById('recent-activity-list');
     if (recentActivityList) {
         const recentWalks = completedWalks.slice(0, 2);
-        recentActivityList.innerHTML = recentWalks.map(walk => `
-            <div class="glass-card p-3 flex items-center gap-3">
-                <img src="${walk.walker.avatar}" class="w-10 h-10 avatar-frame object-cover" alt="${walk.walker.name}">
-                <div>
-                    <p class="font-semibold">Walk with ${walk.walker.name}</p>
-                    <p class="text-xs text-soft">${new Date(walk.date + 'T00:00:00').toLocaleDateString()}</p>
-                </div>
-                <span class="ml-auto font-bold text-sm">$${walk.price.toFixed(2)}</span>
-            </div>`).join('');
+        recentActivityList.innerHTML = recentWalks.map(walk => {
+            const walkDate = new Date(`${walk.date}T00:00:00`);
+            const isValidDate = !Number.isNaN(walkDate.valueOf());
+            const formattedDate = isValidDate ? walkDate.toLocaleDateString() : walk.date;
+            const buttonLabel = `View walk summary for ${walk.walker.name} on ${formattedDate}`;
+            return `
+                <button type="button" class="glass-card p-3 flex items-center gap-3 w-full text-left recent-activity-item" data-walk-id="${walk.id}" aria-label="${buttonLabel}">
+                    <img src="${walk.walker.avatar}" class="w-10 h-10 avatar-frame object-cover" alt="${walk.walker.name}">
+                    <div>
+                        <p class="font-semibold">Walk with ${walk.walker.name}</p>
+                        <p class="text-xs text-soft">${formattedDate}</p>
+                    </div>
+                    <span class="ml-auto font-bold text-sm">$${walk.price.toFixed(2)}</span>
+                </button>`;
+        }).join('');
+
+        recentActivityList.querySelectorAll('.recent-activity-item').forEach(item => {
+            item.addEventListener('click', event => {
+                const walkId = parseInt(event.currentTarget.dataset.walkId, 10);
+                if (!Number.isNaN(walkId)) {
+                    goToPage('page-walk-summary', { walkId, backTarget: 'page-home' });
+                }
+            });
+        });
     }
 
 }
