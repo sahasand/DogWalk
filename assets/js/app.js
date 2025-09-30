@@ -310,6 +310,7 @@ const goToPage = (pageId, context = null) => {
         case 'page-walker-profile': if (context?.walkerId) renderWalkerProfile(context.walkerId, context.backTarget); break;
         case 'page-live-tracking': if (context?.walkId) renderLiveTracking(context.walkId); break;
         case 'page-recurring-walks': renderRecurringWalksPage(); break;
+        case 'page-walk-history': renderWalkHistoryPage(); break;
         case 'page-payments': renderPaymentsPage(); break;
         case 'page-edit-profile': renderEditProfilePage(); break;
         case 'page-help-support': renderHelpSupportPage(); break;
@@ -820,6 +821,76 @@ function renderWalkSummary(walkId, backTarget = 'page-home') {
             ${walk.activity ? `<div class="glass-card p-4"><h3 class="font-semibold mb-3">Activity Report</h3><div class="flex justify-around text-center">${['Pee', 'Poo', 'Water'].map(act => `<div><div class="w-12 h-12 rounded-full flex items-center justify-center mx-auto ${walk.activity[act.toLowerCase()] ? 'bg-emerald-500/40 text-emerald-200' : 'bg-rose-500/35 text-rose-200'}">${walk.activity[act.toLowerCase()] ? '✓' : '✗'}</div><p class="text-xs mt-2 text-soft uppercase tracking-wide">${act}</p></div>`).join('')}</div></div>` : ''}
             <div class="glass-card p-4"><h3 class="font-semibold mb-2">Walker's Note</h3><p class="text-soft italic">"${walk.note}"</p></div>
         </div>`;
+}
+
+function renderWalkHistoryPage() {
+    const container = document.getElementById('page-walk-history');
+    if (!container) return;
+
+    const completedWalks = walkHistoryData
+        .filter(walk => walk.status === 'Completed')
+        .sort((a, b) => {
+            const aDate = new Date(`${a.date || ''}T${a.time || '00:00'}`);
+            const bDate = new Date(`${b.date || ''}T${b.time || '00:00'}`);
+            if (Number.isNaN(aDate.valueOf()) && Number.isNaN(bDate.valueOf())) return 0;
+            if (Number.isNaN(aDate.valueOf())) return 1;
+            if (Number.isNaN(bDate.valueOf())) return -1;
+            return bDate - aDate;
+        });
+
+    const listMarkup = completedWalks.length
+        ? completedWalks.map(walk => {
+            const walkDate = new Date(`${walk.date || ''}T${walk.time || '00:00'}`);
+            const hasValidDate = !Number.isNaN(walkDate.valueOf());
+            const formattedDate = hasValidDate
+                ? walkDate.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })
+                : walk.date || 'Upcoming walk';
+            const formattedTime = hasValidDate && walk.time ? ` • ${formatTimeDisplay(walk.time)}` : '';
+            const walkerName = walk.walker?.name || 'Your walker';
+            const dogsLabel = (walk.dogs || []).map(dog => dog.name).join(', ');
+            return `
+                <button type="button" class="glass-card walk-history-item" data-walk-id="${walk.id}" aria-label="View walk summary for ${walkerName} on ${formattedDate}">
+                    <div class="flex items-center justify-between gap-4">
+                        <div class="flex items-center gap-3">
+                            <img src="${walk.walker?.avatar || 'https://placehold.co/64x64/0F172A/F8FAFC?text=W'}" alt="${walkerName}" class="recent-activity-avatar">
+                            <div>
+                                <p class="font-semibold text-white">Walk with ${walkerName}</p>
+                                <p class="text-sm text-soft">${formattedDate}${formattedTime}${dogsLabel ? ` • ${dogsLabel}` : ''}</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <span class="recent-activity-amount block">$${Number.isFinite(walk.price) ? walk.price.toFixed(2) : '—'}</span>
+                            <span class="text-xs uppercase tracking-wide text-soft">${walk.status}</span>
+                        </div>
+                    </div>
+                </button>`;
+        }).join('')
+        : `<div class="glass-card p-5 text-center space-y-2">
+                <div class="text-3xl">🐾</div>
+                <p class="font-semibold text-white">No completed walks yet</p>
+                <p class="text-sm text-soft">Book a walk to start your pup's adventure log.</p>
+            </div>`;
+
+    container.innerHTML = `
+        <div class="page-header">
+            <button class="back-btn" data-target="page-home" aria-label="Back to Home">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+            </button>
+            <h1>Walk History</h1>
+        </div>
+        <div class="space-y-4">
+            ${listMarkup}
+        </div>
+    `;
+
+    container.querySelectorAll('.walk-history-item').forEach(item => {
+        item.addEventListener('click', event => {
+            const walkId = parseInt(event.currentTarget.dataset.walkId, 10);
+            if (!Number.isNaN(walkId)) {
+                goToPage('page-walk-summary', { walkId, backTarget: 'page-walk-history' });
+            }
+        });
+    });
 }
 
 function renderDogsPage() {
@@ -1833,7 +1904,7 @@ if (managePlansLink) {
 
 const viewHistoryLink = document.getElementById('home-view-history');
 if (viewHistoryLink) {
-    viewHistoryLink.addEventListener('click', () => goToPage('page-payments'));
+    viewHistoryLink.addEventListener('click', () => goToPage('page-walk-history'));
 }
 
 // --- APP INITIALIZATION ---
