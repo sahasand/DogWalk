@@ -1047,10 +1047,12 @@ function fullInitBookingFlow() {
                  walkerList.innerHTML = `<p class="text-center text-soft">No walkers match your criteria.</p>`;
                  return;
             }
-            walkerList.innerHTML = walkers.map(w => `<div class="walker-card-container relative"><input type="radio" name="walker" value="${w.id}" class="hidden" id="walker-radio-${w.id}" ${bookingState.selectedWalker?.id === w.id ? 'checked' : ''}><label for="walker-radio-${w.id}" class="walker-card glass-card p-4 flex gap-4 items-start cursor-pointer"><img src="${w.avatar}" alt="${w.name}" class="w-16 h-16 avatar-frame view-profile-btn object-cover" data-walker-id="${w.id}"><div class="flex-1 space-y-1"><div class="flex items-center gap-2"><h3 class="font-bold text-lg text-white">${w.name}</h3>${w.verified ? `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="#5eead4" stroke="#0b1120" stroke-width="1"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>`:''}</div><p class="text-sm text-soft">★ ${w.rating.toFixed(1)} (${w.reviews} reviews)</p></div><div class="walker-card-meta text-right"><p class="text-xl font-bold text-white">$${w.price.toFixed(2)}</p><span class="selected-pill">Selected</span></div></label><button type="button" class="favorite-btn favorite-btn-floating ${w.favorite ? 'favorited' : ''}" data-walker-id="${w.id}" aria-pressed="${w.favorite}" aria-label="Toggle favorite for ${w.name}"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg></button></div>`).join('');
+            walkerList.innerHTML = walkers.map(w => `<div class="walker-card-container relative"><input type="radio" name="walker" value="${w.id}" class="hidden" id="walker-radio-${w.id}"><label for="walker-radio-${w.id}" class="glass-card p-4 flex gap-4 items-center cursor-pointer"><img src="${w.avatar}" alt="${w.name}" class="w-16 h-16 avatar-frame view-profile-btn object-cover" data-walker-id="${w.id}"><div class="flex-1"> <div class="flex items-center gap-2"><h3 class="font-bold text-lg text-white">${w.name}</h3>${w.verified ? `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="#5eead4" stroke="#0b1120" stroke-width="1"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>`:''}</div><p class="text-sm text-soft">★ ${w.rating.toFixed(1)} (${w.reviews} reviews)</p></div><div class="text-right"><p class="text-xl font-bold text-white">$${w.price.toFixed(2)}</p></div></label><button class="favorite-btn absolute top-3 right-3 p-2 ${w.favorite ? 'favorited' : ''}" data-walker-id="${w.id}"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg></button></div>`).join('');
             walkerList.querySelectorAll('input[name="walker"]').forEach(radio => radio.addEventListener('change', e => {
                 bookingState.selectedWalker = walkerData.find(w => w.id === parseInt(e.target.value));
                 document.getElementById('toScreen3Btn').disabled = false;
+                walkerList.querySelectorAll('.glass-card').forEach(c => c.style.borderColor = 'var(--surface-border)');
+                e.target.nextElementSibling.style.borderColor = 'var(--primary-color-light)';
             }));
             if (prefill?.walkerId && !hasAppliedPrefillWalker) {
                 const targetRadio = walkerList.querySelector(`input[name="walker"][value="${prefill.walkerId}"]`);
@@ -1066,15 +1068,11 @@ function fullInitBookingFlow() {
             }));
             walkerList.querySelectorAll('.favorite-btn').forEach(btn => btn.addEventListener('click', e => {
                 e.stopPropagation();
-                e.preventDefault();
                 const walkerId = parseInt(e.currentTarget.dataset.walkerId);
                 const walker = walkerData.find(w => w.id === walkerId);
                 walker.favorite = !walker.favorite;
                 e.currentTarget.classList.toggle('favorited');
-                e.currentTarget.setAttribute('aria-pressed', walker.favorite);
             }));
-            const selectedRadio = walkerList.querySelector('input[name="walker"]:checked');
-            document.getElementById('toScreen3Btn').disabled = !selectedRadio;
         }, 500);
     }
 
