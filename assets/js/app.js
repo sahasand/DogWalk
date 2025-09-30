@@ -42,9 +42,48 @@ const chatData = {
     3: [{sender:'walker', text:'Hi, just wanted to check if Max has any issues with other dogs at the park.'}, {sender:'user', text:'He is usually very friendly!'}, {sender:'walker', text:"Yes, I can be there a few minutes early."}],
 };
 const paymentData = {
-    card: { type: 'Visa', last4: '4242', expiry: '12/26'},
-    transactions: [{date: '2025-09-11', desc: 'Walk with Jordan L.', amount: 25.00}, {date: '2025-09-09', desc: 'Walk with Alex R.', amount: 40.00}]
+    cards: [
+        {
+            id: 1,
+            brand: 'Visa',
+            last4: '4242',
+            expiry: '12/26',
+            cardholderName: 'Alex Morgan',
+            billingAddress: {
+                line1: '123 Bark Ave',
+                line2: '',
+                city: 'Seattle',
+                state: 'WA',
+                postalCode: '98101'
+            },
+            isDefault: true
+        }
+    ],
+    transactions: [
+        { date: '2025-09-11', desc: 'Walk with Jordan L.', amount: 25.00 },
+        { date: '2025-09-09', desc: 'Walk with Alex R.', amount: 40.00 }
+    ]
 };
+
+const userProfile = {
+    name: 'Alex Morgan',
+    email: 'alex.morgan@email.com',
+    phone: '555-123-4567',
+    address: '123 Bark Ave, Seattle, WA',
+    bio: 'Dog parent to Buddy, Lucy, and Max. Always looking for new adventures for the pack!',
+    emergencyContact: '',
+    preferredWalkTime: 'Evenings',
+    avatar: 'https://placehold.co/160x160/0B1120/1DD3B0?text=A'
+};
+
+const PROFILE_COMPLETION_FIELDS = [
+    { key: 'email', label: 'Add your email address' },
+    { key: 'phone', label: 'Add a phone number' },
+    { key: 'address', label: 'Add your home address' },
+    { key: 'bio', label: 'Tell walkers about your dogs' },
+    { key: 'emergencyContact', label: 'Add an emergency contact' },
+    { key: 'preferredWalkTime', label: 'Share your preferred walk time' }
+];
 
 // --- RECURRING WALK HELPERS ---
 const DAY_LABELS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -268,6 +307,7 @@ const goToPage = (pageId, context = null) => {
 
     switch (pageId) {
         case 'page-home': renderDashboard(); break;
+        case 'page-profile': renderProfilePage(); break;
         case 'page-walk-summary': if (context?.walkId) renderWalkSummary(context.walkId, context?.backTarget); break;
         case 'page-dogs': renderDogsPage(); break;
         case 'page-dog-form': renderDogForm(context?.dogId); break;
@@ -277,8 +317,299 @@ const goToPage = (pageId, context = null) => {
         case 'page-live-tracking': if (context?.walkId) renderLiveTracking(context.walkId); break;
         case 'page-recurring-walks': renderRecurringWalksPage(); break;
         case 'page-payments': renderPaymentsPage(); break;
+        case 'page-edit-profile': renderEditProfilePage(); break;
+        case 'page-help-support': renderHelpSupportPage(); break;
     }
 };
+
+function calculateProfileCompletion(profile) {
+    const total = PROFILE_COMPLETION_FIELDS.length;
+    const filled = PROFILE_COMPLETION_FIELDS.reduce((count, field) => {
+        const value = profile[field.key];
+        return count + (typeof value === 'string' && value.trim() ? 1 : 0);
+    }, 0);
+    const percentage = total ? Math.round((filled / total) * 100) : 100;
+    const missing = PROFILE_COMPLETION_FIELDS.filter(field => {
+        const value = profile[field.key];
+        return !(typeof value === 'string' && value.trim());
+    }).map(field => field.label);
+    return { percentage, filled, total, missing };
+}
+
+function showToast(message) {
+    if (!message) return;
+    const existingToast = document.querySelector('.app-toast');
+    if (existingToast) existingToast.remove();
+
+    const toast = document.createElement('div');
+    toast.className = 'app-toast';
+    toast.textContent = message;
+    document.body.appendChild(toast);
+
+    requestAnimationFrame(() => toast.classList.add('visible'));
+    setTimeout(() => {
+        toast.classList.remove('visible');
+        setTimeout(() => toast.remove(), 300);
+    }, 2600);
+}
+
+function escapeHTML(value = '') {
+    return String(value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
+
+function detectCardBrand(cardNumber = '') {
+    const digits = String(cardNumber).replace(/\D/g, '');
+    if (/^4/.test(digits)) return 'Visa';
+    if (/^(5[1-5]|22[2-9]|2[3-7])/.test(digits)) return 'Mastercard';
+    if (/^3[47]/.test(digits)) return 'American Express';
+    if (/^6(011|5)/.test(digits)) return 'Discover';
+    if (/^35/.test(digits)) return 'JCB';
+    if (/^(30[0-5]|36|38)/.test(digits)) return 'Diners Club';
+    return 'Card';
+}
+
+function getCardBrandBadgeText(brand = '') {
+    const map = {
+        Visa: 'VISA',
+        Mastercard: 'MC',
+        'American Express': 'AMEX',
+        Discover: 'DISC',
+        JCB: 'JCB',
+        'Diners Club': 'DINERS',
+        Card: 'CARD'
+    };
+    const normalized = brand && typeof brand === 'string' ? brand.trim() : 'Card';
+    return map[normalized] || normalized.slice(0, 6).toUpperCase();
+}
+
+function getCardBrandBadgeUrl(brand = '') {
+    const text = getCardBrandBadgeText(brand);
+    return `https://placehold.co/64x40/FFFFFF/0B1120?text=${encodeURIComponent(text)}`;
+}
+
+function formatBillingAddressLines(address = {}) {
+    const line1 = typeof address.line1 === 'string' ? address.line1.trim() : '';
+    const line2 = typeof address.line2 === 'string' ? address.line2.trim() : '';
+    const city = typeof address.city === 'string' ? address.city.trim() : '';
+    const state = typeof address.state === 'string' ? address.state.trim() : '';
+    const postalCode = typeof address.postalCode === 'string' ? address.postalCode.trim() : '';
+
+    const lines = [];
+    if (line1) lines.push(line1);
+    if (line2) lines.push(line2);
+
+    const cityState = [city, state].filter(Boolean).join(', ');
+    const finalLineParts = [];
+    if (cityState) finalLineParts.push(cityState);
+    if (postalCode) finalLineParts.push(postalCode);
+    if (finalLineParts.length) lines.push(finalLineParts.join(' '));
+
+    return lines.map(line => `<span class="block">${escapeHTML(line)}</span>`).join('');
+}
+
+function showLogoutModal() {
+    vibrate(20);
+    if (document.getElementById('logoutModal')) return;
+    const modal = document.createElement('div');
+    modal.id = 'logoutModal';
+    modal.className = 'modal-overlay active';
+    modal.innerHTML = `
+        <div class="modal-content glass-card space-y-4">
+            <h2 class="text-2xl font-bold text-white">Log out?</h2>
+            <p class="text-sm text-soft">We'll keep your preferences saved so you can jump back in anytime.</p>
+            <div class="grid grid-cols-2 gap-3">
+                <button type="button" class="btn btn-secondary" id="cancel-logout">Stay Logged In</button>
+                <button type="button" class="btn btn-primary" id="confirm-logout">Log Out</button>
+            </div>
+        </div>`;
+    document.body.appendChild(modal);
+
+    modal.addEventListener('click', e => {
+        if (e.target === modal) modal.remove();
+    });
+    modal.querySelector('#cancel-logout').addEventListener('click', () => modal.remove());
+    modal.querySelector('#confirm-logout').addEventListener('click', () => {
+        modal.remove();
+        showToast('You have been logged out');
+        goToPage('page-home');
+    });
+}
+
+function renderProfilePage() {
+    const container = document.getElementById('profile-page-content');
+    if (!container) return;
+
+    const { percentage, missing } = calculateProfileCompletion(userProfile);
+    const safePercentage = Math.min(100, Math.max(0, percentage));
+    const completionCopy = missing.length ? 'Complete a few more details to help walkers know your pups better.' : 'Amazing! Walkers have everything they need.';
+    const detailRows = [
+        { label: 'Email', value: userProfile.email, placeholder: 'Add your email address' },
+        { label: 'Phone', value: userProfile.phone, placeholder: 'Add a phone number' },
+        { label: 'Home Address', value: userProfile.address, placeholder: 'Add your home address' },
+        { label: 'Preferred Walk Time', value: userProfile.preferredWalkTime, placeholder: 'Let walkers know your ideal time' },
+        { label: 'Emergency Contact', value: userProfile.emergencyContact, placeholder: 'Add an emergency contact' }
+    ];
+
+    container.innerHTML = `
+        <div class="flex flex-col items-center text-center">
+            <img src="${userProfile.avatar}" alt="${userProfile.name}" class="w-24 h-24 avatar-frame object-cover">
+            <h2 class="text-2xl font-bold mt-4 text-white">${userProfile.name || 'Your Name'}</h2>
+            <p class="text-soft text-sm">${userProfile.email || 'Add your email so walkers can reach you'}</p>
+        </div>
+
+        <div class="glass-card p-5 space-y-4">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h3 class="font-semibold text-white">Profile completion</h3>
+                    <p class="text-xs text-soft">${completionCopy}</p>
+                </div>
+                <span class="text-lg font-semibold text-white">${safePercentage}%</span>
+            </div>
+            <div class="profile-progress" role="progressbar" aria-valuenow="${safePercentage}" aria-valuemin="0" aria-valuemax="100">
+                <div class="profile-progress-fill" style="width: ${safePercentage}%;"></div>
+            </div>
+            ${missing.length ? `<ul class="list-disc profile-task-list pl-5 space-y-1 text-sm text-soft">${missing.map(task => `<li>${task}</li>`).join('')}</ul>` : '<p class="text-sm text-soft">All set! Your profile looks great.</p>'}
+        </div>
+
+        <div class="glass-card p-4 divide-y divide-[var(--surface-border)]">
+            <a href="#" class="profile-link py-3 flex justify-between items-center" data-target="page-edit-profile"><span>Edit Profile</span><span>›</span></a>
+            <a href="#" class="profile-link py-3 flex justify-between items-center" data-target="page-payments"><span>Payment Methods</span><span>›</span></a>
+            <a href="#" class="profile-link py-3 flex justify-between items-center" data-target="page-help-support"><span>Help &amp; Support</span><span>›</span></a>
+        </div>
+
+        <div class="glass-card p-5 space-y-3">
+            <h3 class="font-semibold text-white">Account details</h3>
+            <p class="text-sm text-soft">Keep this info current so walkers arrive prepared.</p>
+            <div class="divide-y divide-[var(--surface-border)]">
+                ${detailRows.map(row => {
+                    const value = row.value && row.value.trim();
+                    return `<div class="py-3 flex justify-between items-start gap-4">
+                        <span class="text-sm text-soft">${row.label}</span>
+                        <span class="text-sm ${value ? 'text-white font-medium' : 'italic text-soft'} text-right">${value || row.placeholder}</span>
+                    </div>`;
+                }).join('')}
+            </div>
+        </div>
+
+        <div class="glass-card p-5 space-y-3">
+            <h3 class="font-semibold text-white">About your pack</h3>
+            <p class="text-sm text-soft">${userProfile.bio ? userProfile.bio : 'Add a short bio so walkers know what makes your pups special.'}</p>
+        </div>
+
+        <button id="btn-logout" class="btn btn-secondary w-full">Log Out</button>
+    `;
+
+    const logoutBtn = document.getElementById('btn-logout');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', e => {
+            e.preventDefault();
+            showLogoutModal();
+        });
+    }
+}
+
+function renderEditProfilePage() {
+    const container = document.getElementById('page-edit-profile');
+    if (!container) return;
+
+    container.innerHTML = `
+        <div class="page-header"><button class="back-btn" data-target="page-profile"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button><h1>Edit Profile</h1></div>
+        <form id="edit-profile-form" class="space-y-5">
+            <div class="glass-card p-5 space-y-4">
+                <div>
+                    <label class="text-sm font-semibold block mb-2">Full name</label>
+                    <div class="input-group"><input type="text" name="name" class="input-field" value="${userProfile.name || ''}" placeholder="Your full name"></div>
+                </div>
+                <div>
+                    <label class="text-sm font-semibold block mb-2">Email</label>
+                    <div class="input-group"><input type="email" name="email" class="input-field" value="${userProfile.email || ''}" placeholder="you@example.com"></div>
+                </div>
+                <div>
+                    <label class="text-sm font-semibold block mb-2">Phone</label>
+                    <div class="input-group"><input type="tel" name="phone" class="input-field" value="${userProfile.phone || ''}" placeholder="(555) 123-4567"></div>
+                </div>
+            </div>
+            <div class="glass-card p-5 space-y-4">
+                <div>
+                    <label class="text-sm font-semibold block mb-2">Home address</label>
+                    <div class="input-group"><input type="text" name="address" class="input-field" value="${userProfile.address || ''}" placeholder="Street, City, State"></div>
+                </div>
+                <div>
+                    <label class="text-sm font-semibold block mb-2">Preferred walk time</label>
+                    <div class="input-group"><input type="text" name="preferredWalkTime" class="input-field" value="${userProfile.preferredWalkTime || ''}" placeholder="Mornings, evenings, etc."></div>
+                </div>
+                <div>
+                    <label class="text-sm font-semibold block mb-2">Emergency contact</label>
+                    <div class="input-group"><input type="text" name="emergencyContact" class="input-field" value="${userProfile.emergencyContact || ''}" placeholder="Name &amp; phone number"></div>
+                </div>
+            </div>
+            <div class="glass-card p-5 space-y-3">
+                <label class="text-sm font-semibold block">About your pack</label>
+                <div class="input-group"><textarea name="bio" class="input-field h-28 resize-none" placeholder="Share quirks, routines, or favorite treats.">${userProfile.bio || ''}</textarea></div>
+            </div>
+            <button type="submit" class="btn btn-primary w-full">Save changes</button>
+        </form>
+    `;
+
+    const formEl = document.getElementById('edit-profile-form');
+    formEl.addEventListener('submit', e => {
+        e.preventDefault();
+        const formData = new FormData(formEl);
+        userProfile.name = formData.get('name')?.trim() || '';
+        userProfile.email = formData.get('email')?.trim() || '';
+        userProfile.phone = formData.get('phone')?.trim() || '';
+        userProfile.address = formData.get('address')?.trim() || '';
+        userProfile.preferredWalkTime = formData.get('preferredWalkTime')?.trim() || '';
+        userProfile.emergencyContact = formData.get('emergencyContact')?.trim() || '';
+        userProfile.bio = formData.get('bio')?.trim() || '';
+        showToast('Profile updated');
+        goToPage('page-profile');
+    });
+}
+
+function renderHelpSupportPage() {
+    const container = document.getElementById('page-help-support');
+    if (!container) return;
+
+    container.innerHTML = `
+        <div class="page-header"><button class="back-btn" data-target="page-profile"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button><h1>Help &amp; Support</h1></div>
+        <div class="space-y-5">
+            <div class="glass-card p-5 space-y-3">
+                <h2 class="text-lg font-semibold text-white">We’re here for you</h2>
+                <p class="text-sm text-soft">Browse quick answers or reach out to our support team 24/7.</p>
+            </div>
+            <div class="glass-card p-5 space-y-3">
+                <h3 class="font-semibold text-white">Popular topics</h3>
+                <ul class="list-disc profile-task-list pl-5 space-y-2 text-sm text-soft">
+                    <li>Managing walkers and recurring schedules</li>
+                    <li>Updating payment and billing details</li>
+                    <li>Preparing your pup for their walk</li>
+                </ul>
+            </div>
+            <div class="glass-card p-5 space-y-4">
+                <h3 class="font-semibold text-white">Contact options</h3>
+                <div class="space-y-3 text-sm text-soft">
+                    <div class="flex items-start gap-3"><span class="text-lg">💬</span><div><p class="text-white font-medium">Live chat</p><p>Connect with a specialist in under 2 minutes.</p></div></div>
+                    <div class="flex items-start gap-3"><span class="text-lg">📧</span><div><p class="text-white font-medium">Email</p><p>support@walkies.app</p></div></div>
+                    <div class="flex items-start gap-3"><span class="text-lg">📞</span><div><p class="text-white font-medium">Phone</p><p>(800) 555-0199</p></div></div>
+                </div>
+                <button type="button" class="btn btn-secondary w-full" id="start-support-chat">Message support</button>
+            </div>
+        </div>
+    `;
+
+    const chatBtn = document.getElementById('start-support-chat');
+    if (chatBtn) {
+        chatBtn.addEventListener('click', () => {
+            showToast('Support will be in touch shortly.');
+        });
+    }
+}
 
 function launchBookingFlow(source = 'nav') {
     const bookingPage = document.getElementById('page-booking-flow');
@@ -945,7 +1276,257 @@ function renderRecurringWalksPage() {
 
 function renderPaymentsPage() {
     const container = document.getElementById('page-payments');
-    container.innerHTML = `<div class="page-header"><button class="back-btn" data-target="page-profile"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button><h1>Payments</h1></div><div class="space-y-6"><div class="glass-card p-5"><h3 class="font-semibold mb-3">My Card</h3><div class="flex items-center gap-4"><img src="https://placehold.co/60x40/FFFFFF/0B1120?text=VISA" class="w-12 rounded-md border border-[var(--surface-border)]"><p class="text-white">**** **** **** ${paymentData.card.last4}</p><p class="ml-auto text-sm text-soft">Exp ${paymentData.card.expiry}</p></div></div><div class="glass-card p-5"><h3 class="font-semibold mb-3">Transaction History</h3><div class="space-y-2">${paymentData.transactions.map(t => `<div class="flex justify-between text-sm text-soft"><p>${t.desc}</p><p>$${t.amount.toFixed(2)}</p></div>`).join('')}</div></div><button class="btn btn-secondary w-full">Add New Card</button></div>`;
+    if (!container) return;
+
+    const sortedCards = Array.isArray(paymentData.cards) ? [...paymentData.cards] : [];
+    sortedCards.sort((a, b) => {
+        if (a.isDefault === b.isDefault) return 0;
+        return a.isDefault ? -1 : 1;
+    });
+
+    const savedCardsMarkup = sortedCards.length
+        ? sortedCards.map(card => {
+            const brand = card?.brand || 'Card';
+            const masked = `${'•'.repeat(4)} ${card?.last4 ? String(card.last4).slice(-4) : '0000'}`;
+            const expiry = card?.expiry || '';
+            const cardholderName = card?.cardholderName || '';
+            const addressHtml = formatBillingAddressLines(card?.billingAddress || {});
+            const badgeUrl = getCardBrandBadgeUrl(brand);
+            const defaultBadge = card?.isDefault ? '<span class="badge-muted">Default</span>' : '';
+            return `<div class="payment-card ${card?.isDefault ? 'payment-card-default' : ''}" data-card-id="${card?.id || ''}">
+                <img src="${badgeUrl}" alt="${escapeHTML(brand)} logo" class="payment-card-brand">
+                <div class="payment-card-meta">
+                    <p class="text-sm font-semibold text-white">${escapeHTML(brand)} ${escapeHTML(masked)}</p>
+                    <p class="text-xs text-soft">Exp ${escapeHTML(expiry)}</p>
+                    <p class="text-xs text-soft">${escapeHTML(cardholderName)}</p>
+                    <div class="payment-card-address text-xs">${addressHtml}</div>
+                </div>
+                ${defaultBadge}
+            </div>`;
+        }).join('')
+        : '<p class="text-sm text-soft">No saved payment methods yet. Add a card to get started.</p>';
+
+    const transactionsMarkup = Array.isArray(paymentData.transactions) && paymentData.transactions.length
+        ? paymentData.transactions.map(tx => `<div class="flex justify-between items-start gap-3 text-sm">
+                <div>
+                    <p class="font-medium text-white">${escapeHTML(tx.desc)}</p>
+                    <p class="text-xs text-soft">${escapeHTML(tx.date)}</p>
+                </div>
+                <p class="font-semibold text-white">$${Number(tx.amount || 0).toFixed(2)}</p>
+            </div>`).join('')
+        : '<p class="text-sm text-soft">No recent transactions yet.</p>';
+
+    const defaultCardholderName = escapeHTML(userProfile?.name || '');
+
+    container.innerHTML = `
+        <div class="page-header">
+            <button class="back-btn" data-target="page-profile">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+            </button>
+            <h1>Payments</h1>
+        </div>
+        <div class="space-y-6">
+            <div class="glass-card p-5 space-y-4">
+                <div class="flex justify-between items-start gap-3">
+                    <div>
+                        <h3 class="font-semibold text-white">Saved cards</h3>
+                        <p class="text-xs text-soft">Manage how you pay for walks.</p>
+                    </div>
+                    <button id="addCardButton" class="btn btn-secondary whitespace-nowrap">Add payment method</button>
+                </div>
+                <div class="space-y-3" id="savedCardsList">${savedCardsMarkup}</div>
+            </div>
+
+            <form id="addCardForm" class="glass-card p-5 space-y-4 hidden" novalidate>
+                <div>
+                    <h3 class="font-semibold text-white">Add payment method</h3>
+                    <p class="text-xs text-soft">We’ll securely store your card for future walks.</p>
+                </div>
+                <label class="block space-y-2">
+                    <span class="text-xs font-semibold uppercase tracking-wide text-soft">Card number</span>
+                    <div class="input-group">
+                        <input type="text" name="cardNumber" class="input-field" inputmode="numeric" autocomplete="cc-number" placeholder="1234 5678 9012 3456" maxlength="23" required>
+                    </div>
+                </label>
+                <div class="grid grid-cols-2 gap-3">
+                    <label class="block space-y-2">
+                        <span class="text-xs font-semibold uppercase tracking-wide text-soft">Expiry</span>
+                        <div class="input-group">
+                            <input type="text" name="expiry" class="input-field" inputmode="numeric" autocomplete="cc-exp" placeholder="MM/YY" maxlength="5" required>
+                        </div>
+                    </label>
+                    <label class="block space-y-2">
+                        <span class="text-xs font-semibold uppercase tracking-wide text-soft">CVV</span>
+                        <div class="input-group">
+                            <input type="password" name="cvv" class="input-field" inputmode="numeric" autocomplete="cc-csc" placeholder="123" maxlength="4" required>
+                        </div>
+                    </label>
+                </div>
+                <label class="block space-y-2">
+                    <span class="text-xs font-semibold uppercase tracking-wide text-soft">Cardholder name</span>
+                    <div class="input-group">
+                        <input type="text" name="cardholderName" class="input-field" autocomplete="cc-name" placeholder="Alex Morgan" value="${defaultCardholderName}" required>
+                    </div>
+                </label>
+                <div class="space-y-3">
+                    <label class="block space-y-2">
+                        <span class="text-xs font-semibold uppercase tracking-wide text-soft">Street address</span>
+                        <div class="input-group">
+                            <input type="text" name="billingLine1" class="input-field" autocomplete="billing address-line1" placeholder="123 Bark Ave" required>
+                        </div>
+                    </label>
+                    <label class="block space-y-2">
+                        <span class="text-xs font-semibold uppercase tracking-wide text-soft">Apartment, suite (optional)</span>
+                        <div class="input-group">
+                            <input type="text" name="billingLine2" class="input-field" autocomplete="billing address-line2" placeholder="Apt 5B">
+                        </div>
+                    </label>
+                    <div class="grid grid-cols-2 gap-3">
+                        <label class="block space-y-2">
+                            <span class="text-xs font-semibold uppercase tracking-wide text-soft">City</span>
+                            <div class="input-group">
+                                <input type="text" name="billingCity" class="input-field" autocomplete="billing address-level2" placeholder="Seattle" required>
+                            </div>
+                        </label>
+                        <label class="block space-y-2">
+                            <span class="text-xs font-semibold uppercase tracking-wide text-soft">State</span>
+                            <div class="input-group">
+                                <input type="text" name="billingState" class="input-field uppercase" autocomplete="billing address-level1" placeholder="WA" maxlength="2" required>
+                            </div>
+                        </label>
+                    </div>
+                    <label class="block space-y-2">
+                        <span class="text-xs font-semibold uppercase tracking-wide text-soft">Postal code</span>
+                        <div class="input-group">
+                            <input type="text" name="billingZip" class="input-field" autocomplete="billing postal-code" placeholder="98101" maxlength="10" required>
+                        </div>
+                    </label>
+                </div>
+                <div class="flex gap-3 pt-2">
+                    <button type="submit" class="btn btn-primary flex-1">Save card</button>
+                    <button type="button" id="cancelAddCard" class="btn btn-secondary flex-1">Cancel</button>
+                </div>
+            </form>
+
+            <div class="glass-card p-5 space-y-4">
+                <h3 class="font-semibold text-white">Transaction history</h3>
+                <div class="space-y-3">${transactionsMarkup}</div>
+            </div>
+        </div>`;
+
+    const addCardButton = container.querySelector('#addCardButton');
+    const formEl = container.querySelector('#addCardForm');
+    const cancelButton = container.querySelector('#cancelAddCard');
+    const cardNumberInput = formEl?.querySelector('input[name="cardNumber"]');
+    const expiryInput = formEl?.querySelector('input[name="expiry"]');
+    const cvvInput = formEl?.querySelector('input[name="cvv"]');
+    const stateInput = formEl?.querySelector('input[name="billingState"]');
+    const postalInput = formEl?.querySelector('input[name="billingZip"]');
+
+    const toggleAddCardForm = show => {
+        if (!formEl || !addCardButton) return;
+        if (show) {
+            formEl.classList.remove('hidden');
+            addCardButton.classList.add('hidden');
+            requestAnimationFrame(() => cardNumberInput?.focus());
+        } else {
+            formEl.reset();
+            formEl.classList.add('hidden');
+            addCardButton.classList.remove('hidden');
+        }
+    };
+
+    addCardButton?.addEventListener('click', e => {
+        e.preventDefault();
+        vibrate();
+        toggleAddCardForm(true);
+    });
+
+    cancelButton?.addEventListener('click', e => {
+        e.preventDefault();
+        vibrate();
+        toggleAddCardForm(false);
+    });
+
+    cardNumberInput?.addEventListener('input', () => {
+        const digits = cardNumberInput.value.replace(/\D/g, '').slice(0, 19);
+        const groups = digits.match(/.{1,4}/g) || [];
+        cardNumberInput.value = groups.join(' ');
+    });
+
+    expiryInput?.addEventListener('input', () => {
+        let digits = expiryInput.value.replace(/\D/g, '').slice(0, 4);
+        if (digits.length >= 3) {
+            digits = `${digits.slice(0, 2)}/${digits.slice(2)}`;
+        }
+        expiryInput.value = digits;
+    });
+
+    cvvInput?.addEventListener('input', () => {
+        cvvInput.value = cvvInput.value.replace(/\D/g, '').slice(0, 4);
+    });
+
+    stateInput?.addEventListener('input', () => {
+        stateInput.value = stateInput.value.replace(/[^a-z]/gi, '').slice(0, 2).toUpperCase();
+    });
+
+    postalInput?.addEventListener('input', () => {
+        postalInput.value = postalInput.value.replace(/[^0-9-]/g, '').slice(0, 10);
+    });
+
+    formEl?.addEventListener('submit', e => {
+        e.preventDefault();
+        vibrate(20);
+
+        const formData = new FormData(formEl);
+        const rawCardNumber = (formData.get('cardNumber') || '').toString();
+        const digits = rawCardNumber.replace(/\D/g, '').slice(0, 19);
+        if (digits.length < 12) { alert('Enter a valid card number.'); cardNumberInput?.focus(); return; }
+
+        const expiry = (formData.get('expiry') || '').toString().trim();
+        if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(expiry)) { alert('Enter the expiry in MM/YY format.'); expiryInput?.focus(); return; }
+
+        const cvv = (formData.get('cvv') || '').toString().trim();
+        if (!/^\d{3,4}$/.test(cvv)) { alert('Enter a valid CVV.'); cvvInput?.focus(); return; }
+
+        const cardholderName = (formData.get('cardholderName') || '').toString().trim();
+        if (!cardholderName) { alert('Add the name that appears on the card.'); formEl.querySelector('input[name="cardholderName"]').focus(); return; }
+
+        const line1 = (formData.get('billingLine1') || '').toString().trim();
+        if (!line1) { alert('Enter your billing street address.'); formEl.querySelector('input[name="billingLine1"]').focus(); return; }
+
+        const line2 = (formData.get('billingLine2') || '').toString().trim();
+        const city = (formData.get('billingCity') || '').toString().trim();
+        if (!city) { alert('Enter your billing city.'); formEl.querySelector('input[name="billingCity"]').focus(); return; }
+
+        const state = (formData.get('billingState') || '').toString().trim().toUpperCase();
+        if (state.length < 2) { alert('Enter your state or region.'); formEl.querySelector('input[name="billingState"]').focus(); return; }
+
+        const postalCode = (formData.get('billingZip') || '').toString().trim();
+        if (!postalCode) { alert('Enter your postal code.'); formEl.querySelector('input[name="billingZip"]').focus(); return; }
+
+        const brand = detectCardBrand(digits);
+        const newCard = {
+            id: Date.now(),
+            brand,
+            last4: digits.slice(-4),
+            expiry,
+            cardholderName,
+            billingAddress: {
+                line1,
+                line2,
+                city,
+                state,
+                postalCode
+            },
+            isDefault: !sortedCards.length
+        };
+
+        paymentData.cards = Array.isArray(paymentData.cards) ? paymentData.cards : [];
+        paymentData.cards.push(newCard);
+        showToast('Payment method saved');
+        renderPaymentsPage();
+    });
 }
 
 function fullInitBookingFlow() {

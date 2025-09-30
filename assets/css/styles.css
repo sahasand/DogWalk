@@ -557,6 +557,58 @@ body::after {
     gap: 1rem;
 }
 
+.payment-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1rem;
+    border-radius: var(--border-radius);
+    background: rgba(15, 23, 42, 0.45);
+    border: 1px solid var(--surface-border);
+    transition: var(--transition-base);
+}
+
+.payment-card:hover {
+    border-color: var(--surface-border-strong);
+    box-shadow: 0 18px 36px rgba(8, 47, 73, 0.35);
+}
+
+.payment-card-brand {
+    width: 64px;
+    height: 40px;
+    border-radius: 0.85rem;
+    border: 1px solid var(--surface-border);
+    object-fit: cover;
+    background: rgba(15, 23, 42, 0.45);
+}
+
+.payment-card-meta {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.payment-card-address {
+    color: var(--text-color-soft);
+    line-height: 1.4;
+}
+
+.payment-card-address span {
+    display: block;
+}
+
+.payment-card-default {
+    border-color: var(--primary-color-light);
+    box-shadow: 0 18px 40px rgba(29, 211, 176, 0.22);
+}
+
+.payment-card-default .badge-muted {
+    background: rgba(29, 211, 176, 0.18);
+    border-color: rgba(29, 211, 176, 0.35);
+    color: var(--primary-color-light);
+}
+
 .avatar-frame {
     border-radius: 1rem;
     border: 1px solid var(--surface-border);
@@ -574,6 +626,51 @@ body::after {
 
 .profile-link:hover {
     color: var(--primary-color-light);
+}
+
+.profile-progress {
+    height: 10px;
+    border-radius: 999px;
+    background: rgba(148, 163, 184, 0.22);
+    overflow: hidden;
+    position: relative;
+}
+
+.profile-progress-fill {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, var(--primary-color), var(--primary-color-light));
+    transition: width 0.4s ease;
+}
+
+.profile-task-list li::marker {
+    color: var(--primary-color-light);
+}
+
+.app-toast {
+    position: fixed;
+    left: 50%;
+    bottom: 6rem;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--surface-bg-strong);
+    color: var(--text-color);
+    padding: 0.85rem 1.3rem;
+    border-radius: 999px;
+    border: 1px solid var(--surface-border-strong);
+    box-shadow: var(--shadow-light);
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.3s ease;
+    z-index: 120;
+    font-weight: 500;
+}
+
+.app-toast.visible {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
 }
 
 .divider-soft {
