@@ -46,6 +46,26 @@ const paymentData = {
     transactions: [{date: '2025-09-11', desc: 'Walk with Jordan L.', amount: 25.00}, {date: '2025-09-09', desc: 'Walk with Alex R.', amount: 40.00}]
 };
 
+const userProfile = {
+    name: 'Alex Morgan',
+    email: 'alex.morgan@email.com',
+    phone: '555-123-4567',
+    address: '123 Bark Ave, Seattle, WA',
+    bio: 'Dog parent to Buddy, Lucy, and Max. Always looking for new adventures for the pack!',
+    emergencyContact: '',
+    preferredWalkTime: 'Evenings',
+    avatar: 'https://placehold.co/160x160/0B1120/1DD3B0?text=A'
+};
+
+const PROFILE_COMPLETION_FIELDS = [
+    { key: 'email', label: 'Add your email address' },
+    { key: 'phone', label: 'Add a phone number' },
+    { key: 'address', label: 'Add your home address' },
+    { key: 'bio', label: 'Tell walkers about your dogs' },
+    { key: 'emergencyContact', label: 'Add an emergency contact' },
+    { key: 'preferredWalkTime', label: 'Share your preferred walk time' }
+];
+
 // --- RECURRING WALK HELPERS ---
 const DAY_LABELS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
@@ -268,6 +288,7 @@ const goToPage = (pageId, context = null) => {
 
     switch (pageId) {
         case 'page-home': renderDashboard(); break;
+        case 'page-profile': renderProfilePage(); break;
         case 'page-walk-summary': if (context?.walkId) renderWalkSummary(context.walkId, context?.backTarget); break;
         case 'page-dogs': renderDogsPage(); break;
         case 'page-dog-form': renderDogForm(context?.dogId); break;
@@ -277,8 +298,240 @@ const goToPage = (pageId, context = null) => {
         case 'page-live-tracking': if (context?.walkId) renderLiveTracking(context.walkId); break;
         case 'page-recurring-walks': renderRecurringWalksPage(); break;
         case 'page-payments': renderPaymentsPage(); break;
+        case 'page-edit-profile': renderEditProfilePage(); break;
+        case 'page-help-support': renderHelpSupportPage(); break;
     }
 };
+
+function calculateProfileCompletion(profile) {
+    const total = PROFILE_COMPLETION_FIELDS.length;
+    const filled = PROFILE_COMPLETION_FIELDS.reduce((count, field) => {
+        const value = profile[field.key];
+        return count + (typeof value === 'string' && value.trim() ? 1 : 0);
+    }, 0);
+    const percentage = total ? Math.round((filled / total) * 100) : 100;
+    const missing = PROFILE_COMPLETION_FIELDS.filter(field => {
+        const value = profile[field.key];
+        return !(typeof value === 'string' && value.trim());
+    }).map(field => field.label);
+    return { percentage, filled, total, missing };
+}
+
+function showToast(message) {
+    if (!message) return;
+    const existingToast = document.querySelector('.app-toast');
+    if (existingToast) existingToast.remove();
+
+    const toast = document.createElement('div');
+    toast.className = 'app-toast';
+    toast.textContent = message;
+    document.body.appendChild(toast);
+
+    requestAnimationFrame(() => toast.classList.add('visible'));
+    setTimeout(() => {
+        toast.classList.remove('visible');
+        setTimeout(() => toast.remove(), 300);
+    }, 2600);
+}
+
+function showLogoutModal() {
+    vibrate(20);
+    if (document.getElementById('logoutModal')) return;
+    const modal = document.createElement('div');
+    modal.id = 'logoutModal';
+    modal.className = 'modal-overlay active';
+    modal.innerHTML = `
+        <div class="modal-content glass-card space-y-4">
+            <h2 class="text-2xl font-bold text-white">Log out?</h2>
+            <p class="text-sm text-soft">We'll keep your preferences saved so you can jump back in anytime.</p>
+            <div class="grid grid-cols-2 gap-3">
+                <button type="button" class="btn btn-secondary" id="cancel-logout">Stay Logged In</button>
+                <button type="button" class="btn btn-primary" id="confirm-logout">Log Out</button>
+            </div>
+        </div>`;
+    document.body.appendChild(modal);
+
+    modal.addEventListener('click', e => {
+        if (e.target === modal) modal.remove();
+    });
+    modal.querySelector('#cancel-logout').addEventListener('click', () => modal.remove());
+    modal.querySelector('#confirm-logout').addEventListener('click', () => {
+        modal.remove();
+        showToast('You have been logged out');
+        goToPage('page-home');
+    });
+}
+
+function renderProfilePage() {
+    const container = document.getElementById('profile-page-content');
+    if (!container) return;
+
+    const { percentage, missing } = calculateProfileCompletion(userProfile);
+    const safePercentage = Math.min(100, Math.max(0, percentage));
+    const completionCopy = missing.length ? 'Complete a few more details to help walkers know your pups better.' : 'Amazing! Walkers have everything they need.';
+    const detailRows = [
+        { label: 'Email', value: userProfile.email, placeholder: 'Add your email address' },
+        { label: 'Phone', value: userProfile.phone, placeholder: 'Add a phone number' },
+        { label: 'Home Address', value: userProfile.address, placeholder: 'Add your home address' },
+        { label: 'Preferred Walk Time', value: userProfile.preferredWalkTime, placeholder: 'Let walkers know your ideal time' },
+        { label: 'Emergency Contact', value: userProfile.emergencyContact, placeholder: 'Add an emergency contact' }
+    ];
+
+    container.innerHTML = `
+        <div class="flex flex-col items-center text-center">
+            <img src="${userProfile.avatar}" alt="${userProfile.name}" class="w-24 h-24 avatar-frame object-cover">
+            <h2 class="text-2xl font-bold mt-4 text-white">${userProfile.name || 'Your Name'}</h2>
+            <p class="text-soft text-sm">${userProfile.email || 'Add your email so walkers can reach you'}</p>
+        </div>
+
+        <div class="glass-card p-5 space-y-4">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h3 class="font-semibold text-white">Profile completion</h3>
+                    <p class="text-xs text-soft">${completionCopy}</p>
+                </div>
+                <span class="text-lg font-semibold text-white">${safePercentage}%</span>
+            </div>
+            <div class="profile-progress" role="progressbar" aria-valuenow="${safePercentage}" aria-valuemin="0" aria-valuemax="100">
+                <div class="profile-progress-fill" style="width: ${safePercentage}%;"></div>
+            </div>
+            ${missing.length ? `<ul class="list-disc profile-task-list pl-5 space-y-1 text-sm text-soft">${missing.map(task => `<li>${task}</li>`).join('')}</ul>` : '<p class="text-sm text-soft">All set! Your profile looks great.</p>'}
+        </div>
+
+        <div class="glass-card p-4 divide-y divide-[var(--surface-border)]">
+            <a href="#" class="profile-link py-3 flex justify-between items-center" data-target="page-edit-profile"><span>Edit Profile</span><span>›</span></a>
+            <a href="#" class="profile-link py-3 flex justify-between items-center" data-target="page-payments"><span>Payment Methods</span><span>›</span></a>
+            <a href="#" class="profile-link py-3 flex justify-between items-center" data-target="page-help-support"><span>Help &amp; Support</span><span>›</span></a>
+        </div>
+
+        <div class="glass-card p-5 space-y-3">
+            <h3 class="font-semibold text-white">Account details</h3>
+            <p class="text-sm text-soft">Keep this info current so walkers arrive prepared.</p>
+            <div class="divide-y divide-[var(--surface-border)]">
+                ${detailRows.map(row => {
+                    const value = row.value && row.value.trim();
+                    return `<div class="py-3 flex justify-between items-start gap-4">
+                        <span class="text-sm text-soft">${row.label}</span>
+                        <span class="text-sm ${value ? 'text-white font-medium' : 'italic text-soft'} text-right">${value || row.placeholder}</span>
+                    </div>`;
+                }).join('')}
+            </div>
+        </div>
+
+        <div class="glass-card p-5 space-y-3">
+            <h3 class="font-semibold text-white">About your pack</h3>
+            <p class="text-sm text-soft">${userProfile.bio ? userProfile.bio : 'Add a short bio so walkers know what makes your pups special.'}</p>
+        </div>
+
+        <button id="btn-logout" class="btn btn-secondary w-full">Log Out</button>
+    `;
+
+    const logoutBtn = document.getElementById('btn-logout');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', e => {
+            e.preventDefault();
+            showLogoutModal();
+        });
+    }
+}
+
+function renderEditProfilePage() {
+    const container = document.getElementById('page-edit-profile');
+    if (!container) return;
+
+    container.innerHTML = `
+        <div class="page-header"><button class="back-btn" data-target="page-profile"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button><h1>Edit Profile</h1></div>
+        <form id="edit-profile-form" class="space-y-5">
+            <div class="glass-card p-5 space-y-4">
+                <div>
+                    <label class="text-sm font-semibold block mb-2">Full name</label>
+                    <div class="input-group"><input type="text" name="name" class="input-field" value="${userProfile.name || ''}" placeholder="Your full name"></div>
+                </div>
+                <div>
+                    <label class="text-sm font-semibold block mb-2">Email</label>
+                    <div class="input-group"><input type="email" name="email" class="input-field" value="${userProfile.email || ''}" placeholder="you@example.com"></div>
+                </div>
+                <div>
+                    <label class="text-sm font-semibold block mb-2">Phone</label>
+                    <div class="input-group"><input type="tel" name="phone" class="input-field" value="${userProfile.phone || ''}" placeholder="(555) 123-4567"></div>
+                </div>
+            </div>
+            <div class="glass-card p-5 space-y-4">
+                <div>
+                    <label class="text-sm font-semibold block mb-2">Home address</label>
+                    <div class="input-group"><input type="text" name="address" class="input-field" value="${userProfile.address || ''}" placeholder="Street, City, State"></div>
+                </div>
+                <div>
+                    <label class="text-sm font-semibold block mb-2">Preferred walk time</label>
+                    <div class="input-group"><input type="text" name="preferredWalkTime" class="input-field" value="${userProfile.preferredWalkTime || ''}" placeholder="Mornings, evenings, etc."></div>
+                </div>
+                <div>
+                    <label class="text-sm font-semibold block mb-2">Emergency contact</label>
+                    <div class="input-group"><input type="text" name="emergencyContact" class="input-field" value="${userProfile.emergencyContact || ''}" placeholder="Name &amp; phone number"></div>
+                </div>
+            </div>
+            <div class="glass-card p-5 space-y-3">
+                <label class="text-sm font-semibold block">About your pack</label>
+                <div class="input-group"><textarea name="bio" class="input-field h-28 resize-none" placeholder="Share quirks, routines, or favorite treats.">${userProfile.bio || ''}</textarea></div>
+            </div>
+            <button type="submit" class="btn btn-primary w-full">Save changes</button>
+        </form>
+    `;
+
+    const formEl = document.getElementById('edit-profile-form');
+    formEl.addEventListener('submit', e => {
+        e.preventDefault();
+        const formData = new FormData(formEl);
+        userProfile.name = formData.get('name')?.trim() || '';
+        userProfile.email = formData.get('email')?.trim() || '';
+        userProfile.phone = formData.get('phone')?.trim() || '';
+        userProfile.address = formData.get('address')?.trim() || '';
+        userProfile.preferredWalkTime = formData.get('preferredWalkTime')?.trim() || '';
+        userProfile.emergencyContact = formData.get('emergencyContact')?.trim() || '';
+        userProfile.bio = formData.get('bio')?.trim() || '';
+        showToast('Profile updated');
+        goToPage('page-profile');
+    });
+}
+
+function renderHelpSupportPage() {
+    const container = document.getElementById('page-help-support');
+    if (!container) return;
+
+    container.innerHTML = `
+        <div class="page-header"><button class="back-btn" data-target="page-profile"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button><h1>Help &amp; Support</h1></div>
+        <div class="space-y-5">
+            <div class="glass-card p-5 space-y-3">
+                <h2 class="text-lg font-semibold text-white">We’re here for you</h2>
+                <p class="text-sm text-soft">Browse quick answers or reach out to our support team 24/7.</p>
+            </div>
+            <div class="glass-card p-5 space-y-3">
+                <h3 class="font-semibold text-white">Popular topics</h3>
+                <ul class="list-disc profile-task-list pl-5 space-y-2 text-sm text-soft">
+                    <li>Managing walkers and recurring schedules</li>
+                    <li>Updating payment and billing details</li>
+                    <li>Preparing your pup for their walk</li>
+                </ul>
+            </div>
+            <div class="glass-card p-5 space-y-4">
+                <h3 class="font-semibold text-white">Contact options</h3>
+                <div class="space-y-3 text-sm text-soft">
+                    <div class="flex items-start gap-3"><span class="text-lg">💬</span><div><p class="text-white font-medium">Live chat</p><p>Connect with a specialist in under 2 minutes.</p></div></div>
+                    <div class="flex items-start gap-3"><span class="text-lg">📧</span><div><p class="text-white font-medium">Email</p><p>support@walkies.app</p></div></div>
+                    <div class="flex items-start gap-3"><span class="text-lg">📞</span><div><p class="text-white font-medium">Phone</p><p>(800) 555-0199</p></div></div>
+                </div>
+                <button type="button" class="btn btn-secondary w-full" id="start-support-chat">Message support</button>
+            </div>
+        </div>
+    `;
+
+    const chatBtn = document.getElementById('start-support-chat');
+    if (chatBtn) {
+        chatBtn.addEventListener('click', () => {
+            showToast('Support will be in touch shortly.');
+        });
+    }
+}
 
 function launchBookingFlow(source = 'nav') {
     const bookingPage = document.getElementById('page-booking-flow');
