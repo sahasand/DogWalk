@@ -594,6 +594,9 @@ function renderDashboard() {
             const timeEl = document.getElementById('upcoming-walk-time');
             const durationEl = document.getElementById('upcoming-walk-duration');
             const dogsEl = document.getElementById('upcoming-walk-dogs');
+            const statusEl = document.getElementById('upcoming-walk-status');
+            const ctaEl = document.getElementById('upcoming-walk-cta');
+            const detailsBtn = document.getElementById('upcoming-walk-details');
 
             const walkerName = upcomingWalk.walker?.name || 'Your walker';
             if (avatarEl) {
@@ -621,6 +624,10 @@ function renderDashboard() {
                 }
             }
 
+            if (statusEl) {
+                statusEl.textContent = upcomingWalk.status === 'In Progress' ? 'In progress' : 'Next walk';
+            }
+
             if (durationEl) durationEl.textContent = upcomingWalk.duration ? `${upcomingWalk.duration} min` : 'Walk scheduled';
             if (dogsEl) {
                 const dogLabels = (upcomingWalk.dogs || []).map(dog => dog.avatar || dog.name).join(' ');
@@ -629,10 +636,42 @@ function renderDashboard() {
 
             upcomingCard.onclick = () => goToPage('page-live-tracking', { walkId: upcomingWalk.id });
             upcomingCard.style.cursor = 'pointer';
+
+            if (ctaEl) {
+                ctaEl.textContent = upcomingWalk.status === 'In Progress' ? 'Join live walk' : 'Preview route';
+                ctaEl.onclick = event => {
+                    event.stopPropagation();
+                    goToPage('page-live-tracking', { walkId: upcomingWalk.id });
+                };
+            }
+
+            if (detailsBtn) {
+                const walkerId = upcomingWalk.walker?.id;
+                detailsBtn.textContent = walkerId ? 'About your walker' : 'Walk details';
+                detailsBtn.onclick = event => {
+                    event.stopPropagation();
+                    if (walkerId) {
+                        goToPage('page-walker-profile', { walkerId, backTarget: 'page-home' });
+                    } else {
+                        goToPage('page-live-tracking', { walkId: upcomingWalk.id });
+                    }
+                };
+            }
+
+            upcomingCard.setAttribute('aria-live', upcomingWalk.status === 'In Progress' ? 'assertive' : 'polite');
         } else {
             upcomingSection.style.display = 'none';
             upcomingCard.onclick = null;
             upcomingCard.style.cursor = 'default';
+            delete upcomingCard.dataset.walkId;
+
+            const ctaEl = document.getElementById('upcoming-walk-cta');
+            if (ctaEl) ctaEl.onclick = null;
+
+            const detailsBtn = document.getElementById('upcoming-walk-details');
+            if (detailsBtn) detailsBtn.onclick = null;
+
+            upcomingCard.removeAttribute('aria-live');
         }
     }
 
@@ -640,22 +679,119 @@ function renderDashboard() {
         .filter(w => w.status === 'Completed')
         .sort((a, b) => new Date(b.date + 'T00:00:00') - new Date(a.date + 'T00:00:00'));
 
+    const metricsContainer = document.getElementById('home-metrics');
+    if (metricsContainer) {
+        const now = new Date();
+        const startOfWeek = new Date(now);
+        startOfWeek.setDate(now.getDate() - now.getDay());
+        startOfWeek.setHours(0, 0, 0, 0);
+        const endOfWeek = new Date(startOfWeek);
+        endOfWeek.setDate(startOfWeek.getDate() + 6);
+        endOfWeek.setHours(23, 59, 59, 999);
+
+        const walksThisWeek = walkHistoryData.filter(walk => {
+            if (!walk.date) return false;
+            const walkDate = new Date(`${walk.date}T00:00:00`);
+            if (Number.isNaN(walkDate.valueOf())) return false;
+            return walkDate >= startOfWeek && walkDate <= endOfWeek;
+        }).length;
+
+        const scheduledCount = walkHistoryData.filter(walk => ['In Progress', 'Upcoming'].includes(walk.status)).length;
+        const totalMinutes = walkHistoryData.reduce((sum, walk) => sum + (walk.duration || 30), 0);
+        const highlightedWalk = walkHistoryData.find(walk => ['In Progress', 'Upcoming'].includes(walk.status));
+        const heroWalkerRating = highlightedWalk?.walker?.rating;
+
+        metricsContainer.innerHTML = `
+            <div class="metric-card">
+                <span class="metric-label">Walks this week</span>
+                <span class="metric-value">${walksThisWeek}</span>
+                <span class="metric-trend">${scheduledCount} scheduled</span>
+            </div>
+            <div class="metric-card">
+                <span class="metric-label">Active pups</span>
+                <span class="metric-value">${dogData.length}</span>
+                <span class="metric-trend">Buddy pack ready</span>
+            </div>
+            <div class="metric-card">
+                <span class="metric-label">Minutes booked</span>
+                <span class="metric-value">${totalMinutes}</span>
+                <span class="metric-trend">${heroWalkerRating ? `★ ${heroWalkerRating.toFixed(1)} walker` : 'Keep exploring'}</span>
+            </div>
+        `;
+    }
+
+    const upcomingList = document.getElementById('upcoming-walk-list');
+    if (upcomingList) {
+        const heroWalkId = (upcomingCard && upcomingCard.dataset.walkId) ? parseInt(upcomingCard.dataset.walkId, 10) : null;
+        const otherUpcoming = walkHistoryData
+            .filter(walk => ['In Progress', 'Upcoming'].includes(walk.status) && walk.id !== heroWalkId)
+            .sort((a, b) => {
+                const dateA = new Date(`${a.date || ''}T${a.time || '00:00'}`);
+                const dateB = new Date(`${b.date || ''}T${b.time || '00:00'}`);
+                if (Number.isNaN(dateA.valueOf()) || Number.isNaN(dateB.valueOf())) return 0;
+                return dateA - dateB;
+            });
+
+        if (otherUpcoming.length) {
+            upcomingList.innerHTML = otherUpcoming.slice(0, 3).map(walk => {
+                const dateObj = walk.date ? new Date(`${walk.date}T${walk.time || '00:00'}`) : null;
+                const formattedDate = dateObj && !Number.isNaN(dateObj.valueOf())
+                    ? `${dateObj.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' })}${walk.time ? ` • ${dateObj.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}` : ''}`
+                    : 'Scheduled soon';
+                const durationLabel = walk.duration ? `${walk.duration} min` : '30 min';
+                const dogs = (walk.dogs || []).map(d => d.name || d.avatar).join(', ');
+                return `
+                    <button type="button" class="glass-card upcoming-list-item" data-walk-id="${walk.id}" aria-label="View details for walk with ${walk.walker?.name || 'your walker'}">
+                        <div class="upcoming-item-left">
+                            <img src="${walk.walker?.avatar || 'https://placehold.co/64x64/0F172A/F8FAFC?text=W'}" alt="${walk.walker?.name || 'Walker'}" class="upcoming-avatar">
+                            <div>
+                                <p class="upcoming-title">Walk with ${walk.walker?.name || 'your walker'}</p>
+                                <p class="upcoming-meta">${formattedDate}</p>
+                                <p class="upcoming-dogs">🐾 ${dogs || 'Buddy'}</p>
+                            </div>
+                        </div>
+                        <div class="upcoming-item-right">
+                            <span class="badge-muted">${durationLabel}</span>
+                            <span class="status-pill ${walk.status === 'In Progress' ? 'status-live' : ''}">${walk.status}</span>
+                        </div>
+                    </button>
+                `;
+            }).join('');
+
+            upcomingList.querySelectorAll('.upcoming-list-item').forEach(item => {
+                item.addEventListener('click', event => {
+                    const walkId = parseInt(event.currentTarget.dataset.walkId, 10);
+                    if (!Number.isNaN(walkId)) {
+                        goToPage('page-live-tracking', { walkId });
+                    }
+                });
+            });
+        } else {
+            upcomingList.innerHTML = `<div class="empty-state-card">No other walks planned. Schedule one to keep the adventures going!</div>`;
+        }
+    }
+
     const recentActivityList = document.getElementById('recent-activity-list');
     if (recentActivityList) {
         const recentWalks = completedWalks.slice(0, 2);
         recentActivityList.innerHTML = recentWalks.map(walk => {
             const walkDate = new Date(`${walk.date}T00:00:00`);
             const isValidDate = !Number.isNaN(walkDate.valueOf());
-            const formattedDate = isValidDate ? walkDate.toLocaleDateString() : walk.date;
+            const formattedDate = isValidDate ? walkDate.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) : walk.date;
             const buttonLabel = `View walk summary for ${walk.walker.name} on ${formattedDate}`;
             return `
-                <button type="button" class="glass-card p-3 flex items-center gap-3 w-full text-left recent-activity-item" data-walk-id="${walk.id}" aria-label="${buttonLabel}">
-                    <img src="${walk.walker.avatar}" class="w-10 h-10 avatar-frame object-cover" alt="${walk.walker.name}">
-                    <div>
-                        <p class="font-semibold">Walk with ${walk.walker.name}</p>
-                        <p class="text-xs text-soft">${formattedDate}</p>
+                <button type="button" class="glass-card recent-activity-item" data-walk-id="${walk.id}" aria-label="${buttonLabel}">
+                    <div class="recent-activity-left">
+                        <img src="${walk.walker.avatar}" class="recent-activity-avatar" alt="${walk.walker.name}">
+                        <div>
+                            <p class="recent-activity-title">Walk with ${walk.walker.name}</p>
+                            <p class="recent-activity-meta">${formattedDate}</p>
+                        </div>
                     </div>
-                    <span class="ml-auto font-bold text-sm">$${walk.price.toFixed(2)}</span>
+                    <div class="recent-activity-right">
+                        <span class="recent-activity-amount">$${walk.price.toFixed(2)}</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+                    </div>
                 </button>`;
         }).join('');
 
@@ -1684,6 +1820,31 @@ document.body.addEventListener('click', e => {
 document.getElementById('cta-book-walk').addEventListener('click', () => launchBookingFlow('home-cta'));
 document.getElementById('cta-recurring-walk').addEventListener('click', () => goToPage('page-recurring-walks'));
 document.getElementById('btn-add-dog').addEventListener('click', () => goToPage('page-dog-form'));
+
+const notificationsButton = document.getElementById('home-notifications');
+if (notificationsButton) {
+    notificationsButton.addEventListener('click', () => showToast('You\'re all caught up!'));
+}
+
+const calendarLink = document.getElementById('home-calendar-link');
+if (calendarLink) {
+    calendarLink.addEventListener('click', () => goToPage('page-recurring-walks'));
+}
+
+const managePlansLink = document.getElementById('home-manage-plans');
+if (managePlansLink) {
+    managePlansLink.addEventListener('click', () => goToPage('page-recurring-walks'));
+}
+
+const viewHistoryLink = document.getElementById('home-view-history');
+if (viewHistoryLink) {
+    viewHistoryLink.addEventListener('click', () => goToPage('page-payments'));
+}
+
+const findWalkerLink = document.getElementById('cta-find-walker');
+if (findWalkerLink) {
+    findWalkerLink.addEventListener('click', () => launchBookingFlow('home-find-walker'));
+}
 
 // --- APP INITIALIZATION ---
 goToPage('page-home');
