@@ -576,6 +576,51 @@ body::after {
     color: var(--primary-color-light);
 }
 
+.profile-progress {
+    height: 10px;
+    border-radius: 999px;
+    background: rgba(148, 163, 184, 0.22);
+    overflow: hidden;
+    position: relative;
+}
+
+.profile-progress-fill {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, var(--primary-color), var(--primary-color-light));
+    transition: width 0.4s ease;
+}
+
+.profile-task-list li::marker {
+    color: var(--primary-color-light);
+}
+
+.app-toast {
+    position: fixed;
+    left: 50%;
+    bottom: 6rem;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--surface-bg-strong);
+    color: var(--text-color);
+    padding: 0.85rem 1.3rem;
+    border-radius: 999px;
+    border: 1px solid var(--surface-border-strong);
+    box-shadow: var(--shadow-light);
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.3s ease;
+    z-index: 120;
+    font-weight: 500;
+}
+
+.app-toast.visible {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
 .divider-soft {
     height: 1px;
     width: 100%;
