@@ -42,8 +42,21 @@ const chatData = {
     3: [{sender:'walker', text:'Hi, just wanted to check if Max has any issues with other dogs at the park.'}, {sender:'user', text:'He is usually very friendly!'}, {sender:'walker', text:"Yes, I can be there a few minutes early."}],
 };
 const paymentData = {
-    card: { type: 'Visa', last4: '4242', expiry: '12/26'},
-    transactions: [{date: '2025-09-11', desc: 'Walk with Jordan L.', amount: 25.00}, {date: '2025-09-09', desc: 'Walk with Alex R.', amount: 40.00}]
+    cards: [
+        {
+            id: 1,
+            brand: 'Visa',
+            last4: '4242',
+            expiry: '12/26',
+            name: 'Alex Morgan',
+            billingAddress: '123 Bark Ave, Seattle, WA 98101',
+            isDefault: true
+        }
+    ],
+    transactions: [
+        { date: '2025-09-11', desc: 'Walk with Jordan L.', amount: 25.00 },
+        { date: '2025-09-09', desc: 'Walk with Alex R.', amount: 40.00 }
+    ]
 };
 
 const userProfile = {
@@ -1196,9 +1209,297 @@ function renderRecurringWalksPage() {
     });
 }
 
-function renderPaymentsPage() {
+function detectCardBrand(cardNumber = '') {
+    const digits = cardNumber.replace(/\D/g, '');
+    if (/^4/.test(digits)) return 'Visa';
+    if (/^(5[1-5]|2[2-7])/.test(digits)) return 'Mastercard';
+    if (/^3[47]/.test(digits)) return 'American Express';
+    if (/^6(?:011|5)/.test(digits)) return 'Discover';
+    return 'Card';
+}
+
+function sortPaymentCards() {
+    if (!Array.isArray(paymentData.cards)) {
+        paymentData.cards = [];
+        return;
+    }
+    paymentData.cards.sort((a, b) => {
+        if (a.isDefault === b.isDefault) return b.id - a.id;
+        return a.isDefault ? -1 : 1;
+    });
+}
+
+function setDefaultPaymentCard(cardId) {
+    let updated = false;
+    if (!Array.isArray(paymentData.cards)) {
+        paymentData.cards = [];
+        return updated;
+    }
+    paymentData.cards.forEach(card => {
+        const isMatch = card.id === cardId;
+        if (isMatch) updated = true;
+        card.isDefault = isMatch;
+    });
+    if (updated) sortPaymentCards();
+    return updated;
+}
+
+function createPaymentCard({ number, expiry, name, billingAddress, makeDefault }) {
+    const digits = number.replace(/\D/g, '');
+    if (!Array.isArray(paymentData.cards)) {
+        paymentData.cards = [];
+    }
+    const card = {
+        id: Date.now(),
+        brand: detectCardBrand(digits),
+        last4: digits.slice(-4),
+        expiry,
+        name,
+        billingAddress,
+        isDefault: Boolean(makeDefault)
+    };
+
+    if (card.isDefault || paymentData.cards.length === 0) {
+        paymentData.cards.forEach(existing => { existing.isDefault = false; });
+        card.isDefault = true;
+    }
+
+    paymentData.cards.push(card);
+    sortPaymentCards();
+    return card;
+}
+
+function formatMaskedCard(last4 = '') {
+    return `**** **** **** ${last4}`.trim();
+}
+
+function renderPaymentsPage(noticeMessage = '') {
     const container = document.getElementById('page-payments');
-    container.innerHTML = `<div class="page-header"><button class="back-btn" data-target="page-profile"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button><h1>Payments</h1></div><div class="space-y-6"><div class="glass-card p-5"><h3 class="font-semibold mb-3">My Card</h3><div class="flex items-center gap-4"><img src="https://placehold.co/60x40/FFFFFF/0B1120?text=VISA" class="w-12 rounded-md border border-[var(--surface-border)]"><p class="text-white">**** **** **** ${paymentData.card.last4}</p><p class="ml-auto text-sm text-soft">Exp ${paymentData.card.expiry}</p></div></div><div class="glass-card p-5"><h3 class="font-semibold mb-3">Transaction History</h3><div class="space-y-2">${paymentData.transactions.map(t => `<div class="flex justify-between text-sm text-soft"><p>${t.desc}</p><p>$${t.amount.toFixed(2)}</p></div>`).join('')}</div></div><button class="btn btn-secondary w-full">Add New Card</button></div>`;
+    sortPaymentCards();
+    const cards = paymentData.cards || [];
+    const cardListHTML = cards.length
+        ? cards.map(card => `
+            <div class="glass-card p-5 space-y-4" data-card-id="${card.id}">
+                <div class="flex items-start gap-4">
+                    <div class="flex-1 space-y-2">
+                        <div class="flex items-center justify-between">
+                            <span class="uppercase tracking-[0.2em] text-xs text-soft">${card.brand}</span>
+                            ${card.isDefault ? '<span class="badge-muted">Default</span>' : `<button type="button" class="px-3 py-1 rounded-full border border-white/20 text-xs text-white/80 hover:border-[var(--surface-border-strong)] transition" data-make-default="${card.id}">Make Default</button>`}
+                        </div>
+                        <p class="text-2xl font-semibold text-white">${formatMaskedCard(card.last4)}</p>
+                        <div class="text-sm text-soft flex items-center gap-2">
+                            <span>Expiry</span>
+                            <span class="text-white font-medium">${card.expiry}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="space-y-2 text-sm text-soft">
+                    <div>
+                        <span class="block text-[0.65rem] uppercase tracking-[0.3em] text-white/60">Cardholder</span>
+                        <p class="text-white font-medium">${card.name}</p>
+                    </div>
+                    <div>
+                        <span class="block text-[0.65rem] uppercase tracking-[0.3em] text-white/60">Billing Address</span>
+                        <p>${card.billingAddress}</p>
+                    </div>
+                </div>
+            </div>
+        `).join('')
+        : '<div class="glass-card p-5 text-sm text-soft text-center">No payment methods yet. Add a card to get started.</div>';
+
+    container.innerHTML = `
+        <div class="page-header">
+            <button class="back-btn" data-target="page-profile">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+            </button>
+            <h1>Payments</h1>
+        </div>
+        <div class="space-y-6">
+            <div id="payment-notice" class="hidden glass-card p-4 text-sm bg-[rgba(94,234,212,0.12)] border border-[var(--surface-border-strong)] text-white/80"></div>
+            <div id="card-list" class="space-y-4">
+                ${cardListHTML}
+            </div>
+            <button class="btn btn-secondary w-full" id="show-add-card">Add New Card</button>
+            <div class="glass-card p-5 space-y-4 hidden" id="add-card-panel">
+                <div class="flex items-center justify-between">
+                    <h3 class="font-semibold text-lg">Add new payment method</h3>
+                    <button type="button" class="icon-button" id="close-add-card" aria-label="Close add card form">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                    </button>
+                </div>
+                <form id="add-card-form" class="space-y-4">
+                    <div class="space-y-2">
+                        <label for="card-number" class="block text-sm font-medium text-white/80">Card number</label>
+                        <div class="input-group">
+                            <input type="text" id="card-number" class="input-field" inputmode="numeric" autocomplete="cc-number" placeholder="1234 5678 9012 3456" required>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="space-y-2">
+                            <label for="card-expiry" class="block text-sm font-medium text-white/80">Expiry</label>
+                            <div class="input-group">
+                                <input type="text" id="card-expiry" class="input-field" inputmode="numeric" autocomplete="cc-exp" placeholder="MM/YY" required>
+                            </div>
+                        </div>
+                        <div class="space-y-2">
+                            <label for="card-cvv" class="block text-sm font-medium text-white/80">CVV</label>
+                            <div class="input-group">
+                                <input type="text" id="card-cvv" class="input-field" inputmode="numeric" autocomplete="cc-csc" placeholder="123" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="space-y-2">
+                        <label for="card-name" class="block text-sm font-medium text-white/80">Cardholder name</label>
+                        <div class="input-group">
+                            <input type="text" id="card-name" class="input-field" autocomplete="cc-name" placeholder="Alex Morgan" required>
+                        </div>
+                    </div>
+                    <div class="space-y-2">
+                        <label for="billing-address" class="block text-sm font-medium text-white/80">Billing address</label>
+                        <div class="input-group">
+                            <input type="text" id="billing-address" class="input-field" autocomplete="cc-address" placeholder="123 Bark Ave, Seattle, WA" required>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="space-y-2">
+                            <label for="billing-city" class="block text-sm font-medium text-white/80">City</label>
+                            <div class="input-group">
+                                <input type="text" id="billing-city" class="input-field" autocomplete="address-level2" placeholder="Seattle" required>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="space-y-2">
+                                <label for="billing-state" class="block text-sm font-medium text-white/80">State</label>
+                                <div class="input-group">
+                                    <input type="text" id="billing-state" class="input-field" autocomplete="address-level1" placeholder="WA" maxlength="2" required>
+                                </div>
+                            </div>
+                            <div class="space-y-2">
+                                <label for="billing-zip" class="block text-sm font-medium text-white/80">ZIP</label>
+                                <div class="input-group">
+                                    <input type="text" id="billing-zip" class="input-field" inputmode="numeric" autocomplete="postal-code" placeholder="98101" required>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <label class="flex items-center gap-3 text-sm text-soft">
+                        <input type="checkbox" id="make-default-card" class="h-4 w-4 rounded border border-[var(--surface-border)] bg-transparent">
+                        Set as default payment method
+                    </label>
+                    <p id="add-card-feedback" class="hidden text-sm text-[#fca5a5]" role="alert"></p>
+                    <div class="flex gap-3">
+                        <button type="submit" class="btn btn-primary flex-1">Save Card</button>
+                        <button type="button" class="btn btn-secondary flex-1" id="cancel-add-card">Cancel</button>
+                    </div>
+                </form>
+            </div>
+            <div class="glass-card p-5">
+                <h3 class="font-semibold mb-3">Transaction History</h3>
+                <div class="space-y-2">
+                    ${paymentData.transactions.length ? paymentData.transactions.map(t => `<div class="flex justify-between text-sm text-soft"><p>${t.desc}</p><p>$${t.amount.toFixed(2)}</p></div>`).join('') : '<p class="text-sm text-soft">No transactions yet.</p>'}
+                </div>
+            </div>
+        </div>
+    `;
+
+    const showAddCardBtn = container.querySelector('#show-add-card');
+    const addCardPanel = container.querySelector('#add-card-panel');
+    const addCardForm = container.querySelector('#add-card-form');
+    const cancelAddCardBtn = container.querySelector('#cancel-add-card');
+    const closeAddCardBtn = container.querySelector('#close-add-card');
+    const cardNumberInput = container.querySelector('#card-number');
+    const cardExpiryInput = container.querySelector('#card-expiry');
+    const cardCvvInput = container.querySelector('#card-cvv');
+    const feedbackEl = container.querySelector('#add-card-feedback');
+    const noticeEl = container.querySelector('#payment-notice');
+
+    if (noticeEl) {
+        noticeEl.textContent = noticeMessage;
+        noticeEl.classList.toggle('hidden', !noticeMessage);
+    }
+
+    const hideForm = () => {
+        addCardForm?.reset();
+        addCardPanel?.classList.add('hidden');
+        showAddCardBtn?.classList.remove('hidden');
+        feedbackEl?.classList.add('hidden');
+    };
+
+    showAddCardBtn?.addEventListener('click', () => {
+        addCardPanel.classList.remove('hidden');
+        showAddCardBtn.classList.add('hidden');
+        requestAnimationFrame(() => cardNumberInput?.focus());
+    });
+
+    cancelAddCardBtn?.addEventListener('click', hideForm);
+    closeAddCardBtn?.addEventListener('click', hideForm);
+
+    const formatCardNumberInput = event => {
+        const digits = event.target.value.replace(/\D/g, '').slice(0, 19);
+        event.target.value = digits.replace(/(\d{4})(?=\d)/g, '$1 ').trim();
+    };
+
+    const formatExpiryInput = event => {
+        let value = event.target.value.replace(/\D/g, '').slice(0, 4);
+        if (value.length >= 3) {
+            value = `${value.slice(0, 2)}/${value.slice(2)}`;
+        }
+        event.target.value = value;
+    };
+
+    const formatCvvInput = event => {
+        event.target.value = event.target.value.replace(/\D/g, '').slice(0, 4);
+    };
+
+    cardNumberInput?.addEventListener('input', formatCardNumberInput);
+    cardExpiryInput?.addEventListener('input', formatExpiryInput);
+    cardCvvInput?.addEventListener('input', formatCvvInput);
+
+    addCardForm?.addEventListener('submit', e => {
+        e.preventDefault();
+        feedbackEl?.classList.add('hidden');
+        const number = cardNumberInput.value.replace(/\s+/g, '');
+        const expiry = cardExpiryInput.value.trim();
+        const cvv = cardCvvInput.value.trim();
+        const name = container.querySelector('#card-name').value.trim();
+        const addressLine = container.querySelector('#billing-address').value.trim();
+        const city = container.querySelector('#billing-city').value.trim();
+        const state = container.querySelector('#billing-state').value.trim();
+        const zip = container.querySelector('#billing-zip').value.trim();
+        const makeDefault = container.querySelector('#make-default-card').checked;
+
+        const showError = message => {
+            if (!feedbackEl) return;
+            feedbackEl.textContent = message;
+            feedbackEl.classList.remove('hidden');
+        };
+
+        if (number.length < 13 || number.length > 19) return showError('Enter a valid card number.');
+        if (!/^(0[1-9]|1[0-2])\/(\d{2})$/.test(expiry)) return showError('Enter expiry as MM/YY.');
+        if (cvv.length < 3 || cvv.length > 4) return showError('Enter a valid CVV.');
+        if (!name) return showError('Enter the cardholder name.');
+        if (!addressLine || !city || !state || !zip) return showError('Complete the billing address.');
+
+        const stateCode = state.replace(/[^a-z]/gi, '').slice(0, 2).toUpperCase();
+        if (stateCode.length !== 2) return showError('Use a 2-letter state code.');
+
+        const postalCode = zip.replace(/\s+/g, '');
+        if (postalCode.length < 3) return showError('Enter a valid ZIP/postal code.');
+
+        const billingAddress = `${addressLine}, ${city}, ${stateCode} ${postalCode}`;
+        createPaymentCard({ number, expiry, name, billingAddress, makeDefault });
+        hideForm();
+        renderPaymentsPage('New card saved.');
+    });
+
+    container.querySelectorAll('[data-make-default]').forEach(btn => {
+        btn.addEventListener('click', e => {
+            const id = parseInt(e.currentTarget.dataset.makeDefault, 10);
+            if (setDefaultPaymentCard(id)) {
+                renderPaymentsPage('Default payment method updated.');
+            }
+        });
+    });
 }
 
 function fullInitBookingFlow() {
