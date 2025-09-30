@@ -1826,11 +1826,6 @@ if (notificationsButton) {
     notificationsButton.addEventListener('click', () => showToast('You\'re all caught up!'));
 }
 
-const calendarLink = document.getElementById('home-calendar-link');
-if (calendarLink) {
-    calendarLink.addEventListener('click', () => goToPage('page-recurring-walks'));
-}
-
 const managePlansLink = document.getElementById('home-manage-plans');
 if (managePlansLink) {
     managePlansLink.addEventListener('click', () => goToPage('page-recurring-walks'));
@@ -1839,11 +1834,6 @@ if (managePlansLink) {
 const viewHistoryLink = document.getElementById('home-view-history');
 if (viewHistoryLink) {
     viewHistoryLink.addEventListener('click', () => goToPage('page-payments'));
-}
-
-const findWalkerLink = document.getElementById('cta-find-walker');
-if (findWalkerLink) {
-    findWalkerLink.addEventListener('click', () => launchBookingFlow('home-find-walker'));
 }
 
 // --- APP INITIALIZATION ---
