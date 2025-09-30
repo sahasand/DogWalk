@@ -268,8 +268,7 @@ const goToPage = (pageId, context = null) => {
 
     switch (pageId) {
         case 'page-home': renderDashboard(); break;
-        case 'page-history': renderHistoryPage(); break;
-        case 'page-walk-summary': if (context?.walkId) renderWalkSummary(context.walkId); break;
+        case 'page-walk-summary': if (context?.walkId) renderWalkSummary(context.walkId, context?.backTarget); break;
         case 'page-dogs': renderDogsPage(); break;
         case 'page-dog-form': renderDogForm(context?.dogId); break;
         case 'page-inbox': renderInboxPage(); break;
@@ -278,7 +277,6 @@ const goToPage = (pageId, context = null) => {
         case 'page-live-tracking': if (context?.walkId) renderLiveTracking(context.walkId); break;
         case 'page-recurring-walks': renderRecurringWalksPage(); break;
         case 'page-payments': renderPaymentsPage(); break;
-        case 'page-promotions': renderPromotionsPage(); break;
     }
 };
 
@@ -392,34 +390,12 @@ function renderDashboard() {
 
 }
 
-function renderHistoryPage() {
-    document.getElementById('history-list-container').innerHTML = walkHistoryData.map(walk => `
-        <div class="glass-card p-4 cursor-pointer walk-history-item" data-walk-id="${walk.id}">
-            <div class="flex justify-between items-center">
-                <div><p class="font-bold text-lg text-white">${new Date(walk.date + 'T00:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}</p><p class="text-sm text-soft">With ${walk.walker.name}</p></div>
-                <div class="text-right"><p class="font-bold text-lg text-white">$${walk.price.toFixed(2)}</p><p class="text-sm text-soft">${walk.dogs.map(d => d.avatar).join(' ')}</p></div>
-            </div>
-        </div>`).join('');
-
-    document.querySelectorAll('.walk-history-item').forEach(item => {
-        item.addEventListener('click', e => {
-            const walkId = parseInt(e.currentTarget.dataset.walkId);
-            const walk = walkHistoryData.find(w => w.id === walkId);
-            if (walk.status === 'In Progress') {
-                goToPage('page-live-tracking', { walkId });
-            } else {
-                goToPage('page-walk-summary', { walkId });
-            }
-        });
-    });
-}
-
-function renderWalkSummary(walkId) {
+function renderWalkSummary(walkId, backTarget = 'page-home') {
     const walk = walkHistoryData.find(w => w.id === walkId);
     if (!walk) return;
     const container = document.getElementById('page-walk-summary');
     container.innerHTML = `
-        <div class="page-header"><button class="back-btn" data-target="page-history"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button><h1>Walk Summary</h1></div>
+        <div class="page-header"><button class="back-btn" data-target="${backTarget || 'page-home'}"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button><h1>Walk Summary</h1></div>
         <div class="space-y-6">
             <div class="glass-card overflow-hidden"><img src="https://placehold.co/600x300/3d1c5a/E0E0E0?text=Walk+Route+Map" alt="Map of walk route"></div>
             <div class="glass-card p-4 flex items-center gap-4"><img src="${walk.walker.avatar}" class="w-16 h-16 avatar-frame object-cover"><div><p class="text-soft">Your walker was</p><p class="font-bold text-xl text-white">${walk.walker.name}</p></div></div>
@@ -955,11 +931,6 @@ function renderRecurringWalksPage() {
 function renderPaymentsPage() {
     const container = document.getElementById('page-payments');
     container.innerHTML = `<div class="page-header"><button class="back-btn" data-target="page-profile"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button><h1>Payments</h1></div><div class="space-y-6"><div class="glass-card p-5"><h3 class="font-semibold mb-3">My Card</h3><div class="flex items-center gap-4"><img src="https://placehold.co/60x40/FFFFFF/0B1120?text=VISA" class="w-12 rounded-md border border-[var(--surface-border)]"><p class="text-white">**** **** **** ${paymentData.card.last4}</p><p class="ml-auto text-sm text-soft">Exp ${paymentData.card.expiry}</p></div></div><div class="glass-card p-5"><h3 class="font-semibold mb-3">Transaction History</h3><div class="space-y-2">${paymentData.transactions.map(t => `<div class="flex justify-between text-sm text-soft"><p>${t.desc}</p><p>$${t.amount.toFixed(2)}</p></div>`).join('')}</div></div><button class="btn btn-secondary w-full">Add New Card</button></div>`;
-}
-
-function renderPromotionsPage() {
-     const container = document.getElementById('page-promotions');
-     container.innerHTML = `<div class="page-header"><button class="back-btn" data-target="page-profile"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button><h1>Promotions</h1></div><div class="space-y-6"><div class="glass-card p-5 text-center space-y-3"><h3 class="font-semibold text-white">Refer a Friend, Get $10!</h3><p class="text-soft text-sm">Share your code and you'll both get $10 off your next walk.</p><div class="p-3 rounded-lg font-mono tracking-widest border border-[var(--surface-border)] bg-[rgba(15,23,42,0.6)]">ALEX-WALKS-25</div></div><div class="glass-card p-5 space-y-3"><h3 class="font-semibold text-white">Active Promos</h3><div class="p-3 rounded-lg border border-[var(--surface-border)] bg-[rgba(20,184,166,0.15)]"><p class="font-bold text-white">15% Off All 60-Min Walks</p><p class="text-sm text-soft">Valid this weekend only. Auto-applied at checkout.</p></div></div></div>`;
 }
 
 function fullInitBookingFlow() {
