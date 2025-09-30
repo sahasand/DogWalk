@@ -6,15 +6,15 @@ let dogData = [
     { id: 3, name: 'Max', avatar: '🐕', breed: 'German Shepherd', age: 2, notes: 'Very energetic! Needs a long run.', vet: 'Parkside Vet Clinic', allergies: 'None', likes: 'Frisbees', dislikes: 'Mail carriers' },
 ];
 const walkerData = [
-    { id: 1, name: 'Alex Ray', avatar: 'https://placehold.co/100x100/7F00FF/FFFFFF?text=A', verified: true, rating: 4.9, reviews: 124, price: 25, bio: "Hi, I'm Alex! I've been a passionate dog lover my whole life and have 5+ years of professional walking experience. I'm certified in Pet First Aid and can't wait to meet your furry friend!", badges: ["Pet CPR Certified", "5+ Years Exp."], favorite: true },
-    { id: 2, name: 'Jordan Lee', avatar: 'https://placehold.co/100x100/8A2BE2/FFFFFF?text=J', verified: true, rating: 4.8, reviews: 98, price: 24, bio: "Jordan is a marathon runner who loves taking high-energy dogs on long adventures. If your pup needs to burn off some steam, I'm your walker.", badges: ["Great with Large Dogs"], favorite: false },
-    { id: 3, name: 'Casey Smith', avatar: 'https://placehold.co/100x100/9370DB/FFFFFF?text=C', verified: false, rating: 4.7, reviews: 75, price: 22, bio: "As a veterinary student, I have a deep understanding of animal care and behavior. I'm especially good with shy or anxious dogs.", badges: ["Experience with Puppies"], favorite: true },
+    { id: 1, name: 'Alex Ray', avatar: 'https://placehold.co/100x100/0F766E/0B1120?text=A', verified: true, rating: 4.9, reviews: 124, price: 25, bio: "Hi, I'm Alex! I've been a passionate dog lover my whole life and have 5+ years of professional walking experience. I'm certified in Pet First Aid and can't wait to meet your furry friend!", badges: ["Pet CPR Certified", "5+ Years Exp."], favorite: true },
+    { id: 2, name: 'Jordan Lee', avatar: 'https://placehold.co/100x100/14B8A6/0B1120?text=J', verified: true, rating: 4.8, reviews: 98, price: 24, bio: "Jordan is a marathon runner who loves taking high-energy dogs on long adventures. If your pup needs to burn off some steam, I'm your walker.", badges: ["Great with Large Dogs"], favorite: false },
+    { id: 3, name: 'Casey Smith', avatar: 'https://placehold.co/100x100/0E7490/0B1120?text=C', verified: false, rating: 4.7, reviews: 75, price: 22, bio: "As a veterinary student, I have a deep understanding of animal care and behavior. I'm especially good with shy or anxious dogs.", badges: ["Experience with Puppies"], favorite: true },
 ];
 let walkHistoryData = [
     { id: 99, date: '2025-09-16', time: '16:00', duration: 30, walker: walkerData[1], dogs: [dogData[0]], price: 25.00, status: 'In Progress' },
-    { id: 1, date: '2025-09-11', walker: walkerData[1], dogs: [dogData[0]], price: 25.00, status: 'Completed', photos: ['https://placehold.co/300x200/5f3781/FFFFFF?text=Buddy+Playing', 'https://placehold.co/300x200/8A2BE2/FFFFFF?text=Happy+Pup'], activity: { pee: true, poo: true, water: true }, note: "Buddy had a great time at the park. Full of energy today!" },
+    { id: 1, date: '2025-09-11', walker: walkerData[1], dogs: [dogData[0]], price: 25.00, status: 'Completed', photos: ['https://placehold.co/300x200/0B1120/1DD3B0?text=Buddy+Playing', 'https://placehold.co/300x200/0F766E/0B1120?text=Happy+Pup'], activity: { pee: true, poo: true, water: true }, note: "Buddy had a great time at the park. Full of energy today!" },
     { id: 2, date: '2025-09-09', walker: walkerData[0], dogs: [dogData[0], dogData[1]], price: 40.00, status: 'Completed', photos: [], activity: { pee: true, poo: false, water: true }, note: "Lucy was a little shy but warmed up. Buddy was great as always." },
-    { id: 3, date: '2025-09-05', walker: walkerData[2], dogs: [dogData[2]], price: 22.00, status: 'Completed', photos: ['https://placehold.co/300x200/9370DB/FFFFFF?text=Max+Running'], activity: { pee: true, poo: true, water: false }, note: "Max loved the long run by the lake!" },
+    { id: 3, date: '2025-09-05', walker: walkerData[2], dogs: [dogData[2]], price: 22.00, status: 'Completed', photos: ['https://placehold.co/300x200/0E7490/0B1120?text=Max+Running'], activity: { pee: true, poo: true, water: false }, note: "Max loved the long run by the lake!" },
 ];
 
 let recurringWalkPlans = [
@@ -192,8 +192,8 @@ const fullBookingFlowHTML = `
             <div class="space-y-6 stagger-in">
                 <h2 class="text-lg font-semibold">Service</h2>
                 <div class="grid grid-cols-2 gap-4">
-                    <label class="checkable-card"><input type="radio" name="service" value="30" data-price="25" checked><div class="card-content glass-card p-4"><div class="text-2xl font-bold">30 min</div><div class="text-lg opacity-80">$25</div></div></label>
-                    <label class="checkable-card"><input type="radio" name="service" value="60" data-price="40"><div class="card-content glass-card p-4"><div class="text-2xl font-bold">60 min</div><div class="text-lg opacity-80">$40</div></div></label>
+                    <label class="checkable-card"><input type="radio" name="service" value="30" data-price="25" checked><div class="card-content glass-card p-4"><div class="text-2xl font-bold text-white">30 min</div><div class="text-lg text-soft">$25</div></div></label>
+                    <label class="checkable-card"><input type="radio" name="service" value="60" data-price="40"><div class="card-content glass-card p-4"><div class="text-2xl font-bold text-white">60 min</div><div class="text-lg text-soft">$40</div></div></label>
                 </div>
                 <div class="grid grid-cols-2 gap-4">
                     <div><h2 class="text-lg font-semibold mb-3">Date</h2><div class="input-group"><input type="date" id="walk-date" class="input-field"></div></div>
@@ -224,12 +224,12 @@ const fullBookingFlowHTML = `
             <div class="space-y-6 stagger-in">
                 <div class="glass-card p-5 space-y-3">
                     <h2 class="text-lg font-semibold">Walk Details</h2>
-                    <div id="summary-details" class="divide-y divide-[var(--glass-border)]"></div>
+                    <div id="summary-details" class="divide-y divide-[var(--surface-border)]"></div>
                 </div>
                 <div class="glass-card p-5 space-y-3">
                     <h2 class="text-lg font-semibold">Price Summary</h2>
-                    <div id="price-details" class="divide-y divide-[var(--glass-border)]"></div>
-                    <div class="flex justify-between items-center font-bold text-lg border-t border-[var(--glass-border)] pt-3 mt-3">
+                    <div id="price-details" class="divide-y divide-[var(--surface-border)]"></div>
+                    <div class="flex justify-between items-center font-bold text-lg border-t border-[var(--surface-border)] pt-3 mt-3">
                         <span>Total</span><span id="total-price"></span>
                     </div>
                 </div>
@@ -381,10 +381,10 @@ function renderDashboard() {
         const recentWalks = completedWalks.slice(0, 2);
         recentActivityList.innerHTML = recentWalks.map(walk => `
             <div class="glass-card p-3 flex items-center gap-3">
-                <img src="${walk.walker.avatar}" class="w-10 h-10 rounded-full" alt="${walk.walker.name}">
+                <img src="${walk.walker.avatar}" class="w-10 h-10 avatar-frame object-cover" alt="${walk.walker.name}">
                 <div>
                     <p class="font-semibold">Walk with ${walk.walker.name}</p>
-                    <p class="text-xs opacity-70">${new Date(walk.date + 'T00:00:00').toLocaleDateString()}</p>
+                    <p class="text-xs text-soft">${new Date(walk.date + 'T00:00:00').toLocaleDateString()}</p>
                 </div>
                 <span class="ml-auto font-bold text-sm">$${walk.price.toFixed(2)}</span>
             </div>`).join('');
@@ -396,8 +396,8 @@ function renderHistoryPage() {
     document.getElementById('history-list-container').innerHTML = walkHistoryData.map(walk => `
         <div class="glass-card p-4 cursor-pointer walk-history-item" data-walk-id="${walk.id}">
             <div class="flex justify-between items-center">
-                <div><p class="font-bold text-lg">${new Date(walk.date + 'T00:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}</p><p class="text-sm opacity-80">With ${walk.walker.name}</p></div>
-                <div class="text-right"><p class="font-bold text-lg">$${walk.price.toFixed(2)}</p><p class="text-sm opacity-80">${walk.dogs.map(d => d.avatar).join(' ')}</p></div>
+                <div><p class="font-bold text-lg text-white">${new Date(walk.date + 'T00:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}</p><p class="text-sm text-soft">With ${walk.walker.name}</p></div>
+                <div class="text-right"><p class="font-bold text-lg text-white">$${walk.price.toFixed(2)}</p><p class="text-sm text-soft">${walk.dogs.map(d => d.avatar).join(' ')}</p></div>
             </div>
         </div>`).join('');
 
@@ -422,10 +422,10 @@ function renderWalkSummary(walkId) {
         <div class="page-header"><button class="back-btn" data-target="page-history"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button><h1>Walk Summary</h1></div>
         <div class="space-y-6">
             <div class="glass-card overflow-hidden"><img src="https://placehold.co/600x300/3d1c5a/E0E0E0?text=Walk+Route+Map" alt="Map of walk route"></div>
-            <div class="glass-card p-4 flex items-center gap-4"><img src="${walk.walker.avatar}" class="w-16 h-16 rounded-full"><div><p class="opacity-80">Your walker was</p><p class="font-bold text-xl">${walk.walker.name}</p></div></div>
+            <div class="glass-card p-4 flex items-center gap-4"><img src="${walk.walker.avatar}" class="w-16 h-16 avatar-frame object-cover"><div><p class="text-soft">Your walker was</p><p class="font-bold text-xl text-white">${walk.walker.name}</p></div></div>
             ${(walk.photos && walk.photos.length > 0) ? `<div class="glass-card p-4"><h3 class="font-semibold mb-3">Photo Gallery</h3><div class="grid grid-cols-3 gap-2">${walk.photos.map(p => `<img src="${p}" class="rounded-lg w-full h-24 object-cover">`).join('')}</div></div>` : ''}
-            ${walk.activity ? `<div class="glass-card p-4"><h3 class="font-semibold mb-3">Activity Report</h3><div class="flex justify-around text-center">${['Pee', 'Poo', 'Water'].map(act => `<div><div class="w-12 h-12 rounded-full flex items-center justify-center mx-auto ${walk.activity[act.toLowerCase()] ? 'bg-green-500/50' : 'bg-red-500/50'}">${walk.activity[act.toLowerCase()] ? '✓' : '✗'}</div><p class="text-xs mt-1">${act}</p></div>`).join('')}</div></div>` : ''}
-            <div class="glass-card p-4"><h3 class="font-semibold mb-2">Walker's Note</h3><p class="opacity-80 italic">"${walk.note}"</p></div>
+            ${walk.activity ? `<div class="glass-card p-4"><h3 class="font-semibold mb-3">Activity Report</h3><div class="flex justify-around text-center">${['Pee', 'Poo', 'Water'].map(act => `<div><div class="w-12 h-12 rounded-full flex items-center justify-center mx-auto ${walk.activity[act.toLowerCase()] ? 'bg-emerald-500/40 text-emerald-200' : 'bg-rose-500/35 text-rose-200'}">${walk.activity[act.toLowerCase()] ? '✓' : '✗'}</div><p class="text-xs mt-2 text-soft uppercase tracking-wide">${act}</p></div>`).join('')}</div></div>` : ''}
+            <div class="glass-card p-4"><h3 class="font-semibold mb-2">Walker's Note</h3><p class="text-soft italic">"${walk.note}"</p></div>
         </div>`;
 }
 
@@ -433,7 +433,7 @@ function renderDogsPage() {
      document.getElementById('dog-list-container').innerHTML = dogData.map(dog => `
         <div class="glass-card p-4 flex items-center gap-4">
             <span class="text-5xl">${dog.avatar}</span>
-            <div class="flex-grow"><p class="font-bold text-lg">${dog.name}</p><p class="text-sm opacity-80">${dog.breed}, ${dog.age} years old</p></div>
+            <div class="flex-grow"><p class="font-bold text-lg text-white">${dog.name}</p><p class="text-sm text-soft">${dog.breed}, ${dog.age} years old</p></div>
             <button class="btn-secondary px-3 py-2 text-sm rounded-lg dog-edit-btn" data-dog-id="${dog.id}">Edit</button>
         </div>`).join('');
      document.querySelectorAll('.dog-edit-btn').forEach(btn => btn.addEventListener('click', e => goToPage('page-dog-form', { dogId: parseInt(e.currentTarget.dataset.dogId) })));
@@ -471,13 +471,13 @@ function renderInboxPage() {
         const walker = walkerData.find(w => w.id === convo.walkerId);
         return `
         <div class="glass-card p-4 flex items-center gap-4 cursor-pointer inbox-item" data-walker-id="${walker.id}">
-             <img src="${walker.avatar}" class="w-14 h-14 rounded-full">
+             <img src="${walker.avatar}" class="w-14 h-14 avatar-frame object-cover">
              <div class="flex-grow">
                 <div class="flex justify-between items-start">
                      <p class="font-bold text-lg">${walker.name}</p>
-                     ${convo.unread ? `<span class="w-3 h-3 bg-blue-500 rounded-full mt-1"></span>` : ''}
+                     ${convo.unread ? `<span class="w-3 h-3 bg-teal-300 rounded-full mt-1"></span>` : ''}
                 </div>
-                <p class="text-sm opacity-80 truncate">${convo.lastMessage}</p>
+                <p class="text-sm text-soft truncate">${convo.lastMessage}</p>
              </div>
         </div>`
     }).join('');
@@ -508,10 +508,10 @@ function renderWalkerProfile(walkerId, backTarget = 'page-home') {
             <button class="favorite-btn p-2 ${walker.favorite ? 'favorited' : ''}" data-walker-id="${walker.id}"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg></button>
         </div>
         <div class="space-y-6 stagger-in">
-            <div class="flex flex-col items-center"><img src="${walker.avatar}" class="w-28 h-28 rounded-full border-4 border-[var(--glass-border)]"><h2 class="text-2xl font-bold mt-4">${walker.name}</h2><p class="opacity-70">★ ${walker.rating} (${walker.reviews} Reviews)</p></div>
-            <div class="flex justify-center gap-2">${walker.badges.map(b => `<span class="bg-[var(--glass-bg)] text-xs font-semibold px-3 py-1 rounded-full">${b}</span>`).join('')}</div>
-            <div class="glass-card p-5"><h3 class="font-semibold mb-2">About Me</h3><p class="opacity-80">${walker.bio}</p></div>
-            <div class="glass-card p-5"><h3 class="font-semibold mb-2">Reviews</h3><div class="space-y-3"><div class="flex gap-2"><p class="font-bold">Anna K.</p><p>★★★★★</p></div><p class="opacity-80 text-sm italic">"Alex was amazing with my energetic puppy!"</p></div></div>
+            <div class="flex flex-col items-center"><img src="${walker.avatar}" class="w-28 h-28 avatar-frame object-cover border border-[var(--surface-border)]"><h2 class="text-2xl font-bold mt-4">${walker.name}</h2><p class="text-soft">★ ${walker.rating} (${walker.reviews} Reviews)</p></div>
+            <div class="flex justify-center gap-2 flex-wrap">${walker.badges.map(b => `<span class="badge-muted">${b}</span>`).join('')}</div>
+            <div class="glass-card p-5"><h3 class="font-semibold mb-2">About Me</h3><p class="text-soft">${walker.bio}</p></div>
+            <div class="glass-card p-5"><h3 class="font-semibold mb-2">Reviews</h3><div class="space-y-3"><div class="flex gap-2 items-center text-soft"><p class="font-bold text-white">Anna K.</p><p>★★★★★</p></div><p class="text-sm italic text-soft">"Alex was amazing with my energetic puppy!"</p></div></div>
         </div>`;
 
     container.querySelector('.favorite-btn').addEventListener('click', e => {
@@ -532,7 +532,7 @@ function renderLiveTracking(walkId) {
         <div class="space-y-4">
              <div class="glass-card non-hover overflow-hidden h-64 flex items-center justify-center"><img src="https://placehold.co/600x400/3d1c5a/E0E0E0?text=Live+Map" alt="Live Map" class="w-full h-full object-cover"></div>
              <div class="glass-card non-hover p-4 text-center"><p class="text-lg">Time Remaining</p><p class="text-4xl font-bold">21:47</p></div>
-             <div class="glass-card non-hover p-4"><div class="flex items-center gap-4"><img src="${walk.walker.avatar}" class="w-12 h-12 rounded-full"><p class="font-semibold">${walk.walker.name} is walking ${walk.dogs.map(d=>d.name).join(', ')}</p></div></div>
+            <div class="glass-card non-hover p-4"><div class="flex items-center gap-4"><img src="${walk.walker.avatar}" class="w-12 h-12 avatar-frame object-cover"><p class="font-semibold">${walk.walker.name} is walking ${walk.dogs.map(d=>d.name).join(', ')}</p></div></div>
              <div class="glass-card non-hover p-4"><h3 class="font-semibold mb-2">Send a Message</h3><div class="input-group"><input type="text" placeholder="Great job!" class="input-field pr-20"><button class="absolute right-2 btn btn-primary py-2 px-3 text-sm">Send</button></div></div>
         </div>`;
 }
@@ -552,7 +552,7 @@ function renderRecurringWalksPage() {
             <div id="recurring-empty-state" class="glass-card p-5 text-center space-y-2 ${recurringWalkPlans.length ? 'hidden' : ''}">
                 <div class="text-4xl">🗓️</div>
                 <h2 class="text-lg font-semibold">No recurring walks yet</h2>
-                <p class="text-sm opacity-80">Create a schedule so your pups never miss their favorite stroll.</p>
+                <p class="text-sm text-soft">Create a schedule so your pups never miss their favorite stroll.</p>
             </div>
             <div id="recurring-plan-list" class="space-y-4"></div>
             <button class="btn btn-primary w-full" id="recurring-schedule-btn">Set Up New Schedule</button>
@@ -561,7 +561,7 @@ function renderRecurringWalksPage() {
                     <div class="flex justify-between items-center">
                         <div>
                             <h2 class="text-lg font-semibold" id="recurring-form-title">Set Up New Schedule</h2>
-                            <p class="text-sm opacity-70" id="recurring-form-subtitle">Pick the routine that fits your pups best.</p>
+                            <p class="text-sm text-soft" id="recurring-form-subtitle">Pick the routine that fits your pups best.</p>
                         </div>
                         <button type="button" class="icon-button" id="recurring-form-close" aria-label="Close schedule form">
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
@@ -569,7 +569,7 @@ function renderRecurringWalksPage() {
                     </div>
                     <div class="space-y-4">
                         <div>
-                            <h3 class="text-sm font-semibold mb-2">Plan nickname <span class="opacity-60">(optional)</span></h3>
+                            <h3 class="text-sm font-semibold mb-2 text-white">Plan nickname <span class="text-soft">(optional)</span></h3>
                             <div class="input-group"><input type="text" id="recurring-plan-label" class="input-field" placeholder="e.g., Morning crew"></div>
                         </div>
                         <div>
@@ -700,7 +700,7 @@ function renderRecurringWalksPage() {
                 <input type="radio" name="recurring-duration" value="${option.value}" ${option.value === selectedDuration ? 'checked' : ''}>
                 <div class="card-content glass-card p-4">
                     <div class="text-lg font-semibold">${option.label}</div>
-                    <div class="text-sm opacity-70">${option.price}</div>
+                    <div class="text-sm text-soft">${option.price}</div>
                 </div>
                 <div class="checkmark"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
             </label>
@@ -710,7 +710,7 @@ function renderRecurringWalksPage() {
     function renderWalkerOptions(walkers, selectedId = null) {
         if (!walkerListEl) return;
         if (!walkers.length) {
-            walkerListEl.innerHTML = '<p class="text-sm opacity-70 text-center">No walkers match your filters.</p>';
+            walkerListEl.innerHTML = '<p class="text-sm text-soft text-center">No walkers match your filters.</p>';
             return;
         }
         walkerListEl.innerHTML = walkers.map(walker => {
@@ -718,13 +718,13 @@ function renderRecurringWalksPage() {
             return `
             <label class="walker-option glass-card p-4 flex items-center gap-3${isSelected ? ' selected' : ''}">
                 <input type="radio" class="hidden" name="recurring-walker" value="${walker.id}" ${isSelected ? 'checked' : ''}>
-                <img src="${walker.avatar}" alt="${walker.name}" class="w-12 h-12 rounded-full object-cover">
+                <img src="${walker.avatar}" alt="${walker.name}" class="w-12 h-12 avatar-frame object-cover">
                 <div class="flex-1">
                     <div class="flex items-center gap-2">
                         <span class="font-semibold">${walker.name}</span>
-                        ${walker.verified ? '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="#60a5fa" stroke="white" stroke-width="1"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>' : ''}
+                        ${walker.verified ? '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="#5eead4" stroke="#0b1120" stroke-width="1"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>' : ''}
                     </div>
-                    <p class="text-xs opacity-70">★ ${walker.rating.toFixed(1)} • $${walker.price.toFixed(0)}</p>
+                    <p class="text-xs text-soft">★ ${walker.rating.toFixed(1)} • $${walker.price.toFixed(0)}</p>
                 </div>
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="selection-indicator"><polyline points="20 6 9 17 4 12"></polyline></svg>
             </label>
@@ -795,11 +795,11 @@ function renderRecurringWalksPage() {
                     <div class="flex justify-between gap-3 items-start">
                         <div>
                             <p class="font-semibold text-base">${plan.label || formatPlanDays(plan.daysOfWeek)}</p>
-                            <p class="text-sm opacity-70">${subtitle}</p>
+                            <p class="text-sm text-soft">${subtitle}</p>
                         </div>
                         <span class="status-badge ${statusClass}">${statusLabel}</span>
                     </div>
-                    <div class="text-sm opacity-80 space-y-1">
+                    <div class="text-sm text-soft space-y-1">
                         <p>${formatPlanDays(plan.daysOfWeek)} • ${formatTimeDisplay(plan.time)} • ${plan.duration} min</p>
                         <p>Walker: ${walker ? walker.name : 'Select during booking'}</p>
                         <p>Dogs: ${dogs || 'Select dogs'}</p>
@@ -954,12 +954,12 @@ function renderRecurringWalksPage() {
 
 function renderPaymentsPage() {
     const container = document.getElementById('page-payments');
-    container.innerHTML = `<div class="page-header"><button class="back-btn" data-target="page-profile"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button><h1>Payments</h1></div><div class="space-y-6"><div class="glass-card p-5"><h3 class="font-semibold mb-3">My Card</h3><div class="flex items-center gap-4"><img src="https://placehold.co/60x40/FFFFFF/000000?text=VISA" class="w-12 rounded-md"><p>**** **** **** ${paymentData.card.last4}</p><p class="ml-auto text-sm opacity-80">Exp ${paymentData.card.expiry}</p></div></div><div class="glass-card p-5"><h3 class="font-semibold mb-3">Transaction History</h3><div class="space-y-2">${paymentData.transactions.map(t => `<div class="flex justify-between text-sm"><p>${t.desc}</p><p>$${t.amount.toFixed(2)}</p></div>`).join('')}</div></div><button class="btn btn-secondary w-full">Add New Card</button></div>`;
+    container.innerHTML = `<div class="page-header"><button class="back-btn" data-target="page-profile"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button><h1>Payments</h1></div><div class="space-y-6"><div class="glass-card p-5"><h3 class="font-semibold mb-3">My Card</h3><div class="flex items-center gap-4"><img src="https://placehold.co/60x40/FFFFFF/0B1120?text=VISA" class="w-12 rounded-md border border-[var(--surface-border)]"><p class="text-white">**** **** **** ${paymentData.card.last4}</p><p class="ml-auto text-sm text-soft">Exp ${paymentData.card.expiry}</p></div></div><div class="glass-card p-5"><h3 class="font-semibold mb-3">Transaction History</h3><div class="space-y-2">${paymentData.transactions.map(t => `<div class="flex justify-between text-sm text-soft"><p>${t.desc}</p><p>$${t.amount.toFixed(2)}</p></div>`).join('')}</div></div><button class="btn btn-secondary w-full">Add New Card</button></div>`;
 }
 
 function renderPromotionsPage() {
      const container = document.getElementById('page-promotions');
-     container.innerHTML = `<div class="page-header"><button class="back-btn" data-target="page-profile"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button><h1>Promotions</h1></div><div class="space-y-6"><div class="glass-card p-5 text-center"><h3 class="font-semibold mb-2">Refer a Friend, Get $10!</h3><p class="opacity-80 text-sm mb-4">Share your code and you'll both get $10 off your next walk.</p><div class="p-3 bg-black/20 rounded-lg font-mono tracking-widest">ALEX-WALKS-25</div></div><div class="glass-card p-5"><h3 class="font-semibold mb-3">Active Promos</h3><div class="p-3 bg-primary-color/20 rounded-lg"><p class="font-bold">15% Off All 60-Min Walks</p><p class="text-sm opacity-80">Valid this weekend only. Auto-applied at checkout.</p></div></div></div>`;
+     container.innerHTML = `<div class="page-header"><button class="back-btn" data-target="page-profile"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button><h1>Promotions</h1></div><div class="space-y-6"><div class="glass-card p-5 text-center space-y-3"><h3 class="font-semibold text-white">Refer a Friend, Get $10!</h3><p class="text-soft text-sm">Share your code and you'll both get $10 off your next walk.</p><div class="p-3 rounded-lg font-mono tracking-widest border border-[var(--surface-border)] bg-[rgba(15,23,42,0.6)]">ALEX-WALKS-25</div></div><div class="glass-card p-5 space-y-3"><h3 class="font-semibold text-white">Active Promos</h3><div class="p-3 rounded-lg border border-[var(--surface-border)] bg-[rgba(20,184,166,0.15)]"><p class="font-bold text-white">15% Off All 60-Min Walks</p><p class="text-sm text-soft">Valid this weekend only. Auto-applied at checkout.</p></div></div></div>`;
 }
 
 function fullInitBookingFlow() {
@@ -986,7 +986,7 @@ function fullInitBookingFlow() {
 
     function showSuccessModal() {
         vibrate(50);
-        const modalHTML = `<div class="modal-overlay active" id="successModal"><div class="modal-content glass-card"><svg class="success-checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52"><circle class="checkmark-circle" cx="26" cy="26" r="25" fill="none"/><path class="checkmark-check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/></svg><h2 class="text-2xl font-bold mb-2">Booking Confirmed!</h2><p class="opacity-80">Your dog's adventure is scheduled.</p><button id="modal-back-to-home" class="btn btn-primary mt-4 w-full">Back to Home</button></div></div>`;
+        const modalHTML = `<div class="modal-overlay active" id="successModal"><div class="modal-content glass-card"><svg class="success-checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52"><circle class="checkmark-circle" cx="26" cy="26" r="25" fill="none"/><path class="checkmark-check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/></svg><h2 class="text-2xl font-bold mb-2 text-white">Booking Confirmed!</h2><p class="text-soft">Your dog's adventure is scheduled.</p><button id="modal-back-to-home" class="btn btn-primary mt-4 w-full">Back to Home</button></div></div>`;
         document.body.insertAdjacentHTML('beforeend', modalHTML);
         document.getElementById('modal-back-to-home').addEventListener('click', () => {
             document.getElementById('successModal').remove();
@@ -1040,18 +1040,18 @@ function fullInitBookingFlow() {
     function renderWalkerList(walkers) {
         document.getElementById('toScreen3Btn').disabled = true;
         const walkerList = document.getElementById('walker-list');
-        walkerList.innerHTML = Array(3).fill('').map(() => `<div class="glass-card p-4 flex gap-4 items-center animate-pulse"><div class="w-16 h-16 rounded-full bg-[var(--glass-border)]"></div><div class="flex-1 space-y-2"><div class="h-4 w-3/4 rounded bg-[var(--glass-border)]"></div><div class="h-3 w-1/2 rounded bg-[var(--glass-border)]"></div></div></div>`).join('');
+        walkerList.innerHTML = Array(3).fill('').map(() => `<div class="glass-card p-4 flex gap-4 items-center animate-pulse"><div class="w-16 h-16 rounded-full bg-[var(--surface-border)]"></div><div class="flex-1 space-y-2"><div class="h-4 w-3/4 rounded bg-[var(--surface-border)]"></div><div class="h-3 w-1/2 rounded bg-[var(--surface-border)]"></div></div></div>`).join('');
 
         setTimeout(() => {
             if (walkers.length === 0) {
-                 walkerList.innerHTML = `<p class="text-center opacity-80">No walkers match your criteria.</p>`;
+                 walkerList.innerHTML = `<p class="text-center text-soft">No walkers match your criteria.</p>`;
                  return;
             }
-            walkerList.innerHTML = walkers.map(w => `<div class="walker-card-container relative"><input type="radio" name="walker" value="${w.id}" class="hidden" id="walker-radio-${w.id}"><label for="walker-radio-${w.id}" class="glass-card p-4 flex gap-4 items-center cursor-pointer"><img src="${w.avatar}" alt="${w.name}" class="w-16 h-16 rounded-full view-profile-btn" data-walker-id="${w.id}"><div class="flex-1"> <div class="flex items-center gap-2"><h3 class="font-bold text-lg">${w.name}</h3>${w.verified ? `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="#3b82f6" stroke="white" stroke-width="1"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>`:''}</div><p class="text-sm opacity-80">★ ${w.rating.toFixed(1)} (${w.reviews} reviews)</p></div><div class="text-right"><p class="text-xl font-bold">$${w.price.toFixed(2)}</p></div></label><button class="favorite-btn absolute top-3 right-3 p-2 ${w.favorite ? 'favorited' : ''}" data-walker-id="${w.id}"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg></button></div>`).join('');
+            walkerList.innerHTML = walkers.map(w => `<div class="walker-card-container relative"><input type="radio" name="walker" value="${w.id}" class="hidden" id="walker-radio-${w.id}"><label for="walker-radio-${w.id}" class="glass-card p-4 flex gap-4 items-center cursor-pointer"><img src="${w.avatar}" alt="${w.name}" class="w-16 h-16 avatar-frame view-profile-btn object-cover" data-walker-id="${w.id}"><div class="flex-1"> <div class="flex items-center gap-2"><h3 class="font-bold text-lg text-white">${w.name}</h3>${w.verified ? `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="#5eead4" stroke="#0b1120" stroke-width="1"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>`:''}</div><p class="text-sm text-soft">★ ${w.rating.toFixed(1)} (${w.reviews} reviews)</p></div><div class="text-right"><p class="text-xl font-bold text-white">$${w.price.toFixed(2)}</p></div></label><button class="favorite-btn absolute top-3 right-3 p-2 ${w.favorite ? 'favorited' : ''}" data-walker-id="${w.id}"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg></button></div>`).join('');
             walkerList.querySelectorAll('input[name="walker"]').forEach(radio => radio.addEventListener('change', e => {
                 bookingState.selectedWalker = walkerData.find(w => w.id === parseInt(e.target.value));
                 document.getElementById('toScreen3Btn').disabled = false;
-                walkerList.querySelectorAll('.glass-card').forEach(c => c.style.borderColor = 'var(--glass-border)');
+                walkerList.querySelectorAll('.glass-card').forEach(c => c.style.borderColor = 'var(--surface-border)');
                 e.target.nextElementSibling.style.borderColor = 'var(--primary-color-light)';
             }));
             if (prefill?.walkerId && !hasAppliedPrefillWalker) {
