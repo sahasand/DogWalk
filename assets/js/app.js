@@ -207,11 +207,11 @@ const fullBookingFlowHTML = `
         </section>
         <section class="screen" id="screen2">
             <div class="space-y-6 stagger-in">
-                 <div class="flex flex-wrap gap-2 mb-4" id="filterChips">
-                    <button class="chip active flex-1 btn btn-secondary" data-filter="nearest">Nearest</button>
-                     <button class="chip flex-1 btn btn-secondary" data-filter="favorites">Favorites ★</button>
-                    <button class="chip flex-1 btn btn-secondary" data-filter="price">Price</button>
-                    <button class="chip flex-1 btn btn-secondary" data-filter="top-rated">Top Rated</button>
+                <div class="flex flex-wrap gap-2 mb-4" id="filterChips">
+                    <button type="button" class="chip active flex-1 btn btn-secondary" data-filter="nearest" aria-pressed="true">Nearest</button>
+                    <button type="button" class="chip flex-1 btn btn-secondary" data-filter="favorites" aria-pressed="false">Favorites ★</button>
+                    <button type="button" class="chip flex-1 btn btn-secondary" data-filter="price" aria-pressed="false">Price</button>
+                    <button type="button" class="chip flex-1 btn btn-secondary" data-filter="top-rated" aria-pressed="false">Top Rated</button>
                 </div>
                 <div id="walker-list" class="space-y-4"></div>
                 <div class="grid grid-cols-2 gap-4 pt-4">
@@ -1047,7 +1047,7 @@ function fullInitBookingFlow() {
                  walkerList.innerHTML = `<p class="text-center text-soft">No walkers match your criteria.</p>`;
                  return;
             }
-            walkerList.innerHTML = walkers.map(w => `<div class="walker-card-container relative"><input type="radio" name="walker" value="${w.id}" class="hidden" id="walker-radio-${w.id}"><label for="walker-radio-${w.id}" class="glass-card p-4 flex gap-4 items-center cursor-pointer"><img src="${w.avatar}" alt="${w.name}" class="w-16 h-16 avatar-frame view-profile-btn object-cover" data-walker-id="${w.id}"><div class="flex-1"> <div class="flex items-center gap-2"><h3 class="font-bold text-lg text-white">${w.name}</h3>${w.verified ? `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="#5eead4" stroke="#0b1120" stroke-width="1"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>`:''}</div><p class="text-sm text-soft">★ ${w.rating.toFixed(1)} (${w.reviews} reviews)</p></div><div class="text-right"><p class="text-xl font-bold text-white">$${w.price.toFixed(2)}</p></div></label><button class="favorite-btn absolute top-3 right-3 p-2 ${w.favorite ? 'favorited' : ''}" data-walker-id="${w.id}"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg></button></div>`).join('');
+            walkerList.innerHTML = walkers.map(w => `<div class="walker-card-container"><input type="radio" name="walker" value="${w.id}" class="hidden" id="walker-radio-${w.id}"><label for="walker-radio-${w.id}" class="glass-card p-4 flex gap-4 items-start cursor-pointer"><img src="${w.avatar}" alt="${w.name}" class="w-16 h-16 avatar-frame view-profile-btn object-cover" data-walker-id="${w.id}"><div class="flex-1"> <div class="flex items-center gap-2"><h3 class="font-bold text-lg text-white">${w.name}</h3>${w.verified ? `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="#5eead4" stroke="#0b1120" stroke-width="1"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>`:''}</div><p class="text-sm text-soft">★ ${w.rating.toFixed(1)} (${w.reviews} reviews)</p></div><div class="ml-auto flex flex-col items-end justify-between gap-3 self-stretch"><p class="text-xl font-bold text-white">$${w.price.toFixed(2)}</p><button type="button" class="favorite-btn ${w.favorite ? 'favorited' : ''}" data-walker-id="${w.id}" aria-pressed="${w.favorite}" aria-label="Toggle favorite for ${w.name}"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg></button></div></label></div>`).join('');
             walkerList.querySelectorAll('input[name="walker"]').forEach(radio => radio.addEventListener('change', e => {
                 bookingState.selectedWalker = walkerData.find(w => w.id === parseInt(e.target.value));
                 document.getElementById('toScreen3Btn').disabled = false;
@@ -1067,11 +1067,14 @@ function fullInitBookingFlow() {
                 goToPage('page-walker-profile', { walkerId: parseInt(e.target.dataset.walkerId), backTarget: 'page-booking-flow' });
             }));
             walkerList.querySelectorAll('.favorite-btn').forEach(btn => btn.addEventListener('click', e => {
+                e.preventDefault();
                 e.stopPropagation();
-                const walkerId = parseInt(e.currentTarget.dataset.walkerId);
+                const buttonEl = e.currentTarget;
+                const walkerId = parseInt(buttonEl.dataset.walkerId);
                 const walker = walkerData.find(w => w.id === walkerId);
                 walker.favorite = !walker.favorite;
-                e.currentTarget.classList.toggle('favorited');
+                buttonEl.classList.toggle('favorited');
+                buttonEl.setAttribute('aria-pressed', String(walker.favorite));
             }));
         }, 500);
     }
@@ -1080,8 +1083,12 @@ function fullInitBookingFlow() {
     document.getElementById('filterChips').addEventListener('click', e => {
         const button = e.target.closest('button');
         if (button) {
-            document.querySelectorAll('#filterChips .chip').forEach(c => c.classList.remove('active'));
+            document.querySelectorAll('#filterChips .chip').forEach(c => {
+                c.classList.remove('active');
+                c.setAttribute('aria-pressed', 'false');
+            });
             button.classList.add('active');
+            button.setAttribute('aria-pressed', 'true');
             let sorted = [...walkerData];
             const filter = button.dataset.filter;
             if (filter === 'price') sorted.sort((a, b) => a.price - b.price);

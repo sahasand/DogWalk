@@ -484,11 +484,61 @@ body::after {
 #page-chat .chat-bubble.walker { background: rgba(15, 23, 42, 0.55); border-bottom-left-radius: 0.5rem; border: 1px solid var(--surface-border); }
 
 /* Favorite Button */
-.favorite-btn { background: none; border: none; cursor: pointer; color: var(--text-color); transition: var(--transition-base); }
-.favorite-btn:hover { color: #fca5a5; }
-.favorite-btn.favorited { color: #fb7185; }
-.favorite-btn svg { stroke: currentColor; transition: fill 0.3s ease; }
-.favorite-btn.favorited svg { fill: currentColor; }
+.chip {
+    border-radius: 999px;
+    transition: var(--transition-base);
+}
+
+.chip:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring);
+}
+
+.chip.active {
+    background: var(--primary-color);
+    border-color: var(--surface-border-strong);
+    color: var(--text-color-dark);
+    box-shadow: 0 12px 32px rgba(29, 211, 176, 0.28);
+}
+
+.favorite-btn {
+    background: rgba(148, 163, 184, 0.14);
+    border: 1px solid var(--surface-border);
+    border-radius: 999px;
+    cursor: pointer;
+    color: var(--text-color);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.35rem;
+    transition: var(--transition-base);
+}
+
+.favorite-btn:hover {
+    background: rgba(148, 163, 184, 0.24);
+    border-color: rgba(148, 163, 184, 0.35);
+}
+
+.favorite-btn:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring);
+}
+
+.favorite-btn.favorited {
+    background: rgba(251, 113, 133, 0.22);
+    border-color: rgba(251, 113, 133, 0.45);
+    color: #fb7185;
+    box-shadow: 0 12px 28px rgba(251, 113, 133, 0.24);
+}
+
+.favorite-btn svg {
+    stroke: currentColor;
+    transition: fill 0.3s ease;
+}
+
+.favorite-btn.favorited svg {
+    fill: currentColor;
+}
 
 /* Success Modal */
 .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(7, 11, 20, 0.65); backdrop-filter: blur(10px); display: flex; justify-content: center; align-items: center; opacity: 0; visibility: hidden; transition: all 0.3s ease-in-out; z-index: 100; }
