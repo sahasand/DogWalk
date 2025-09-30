@@ -254,13 +254,10 @@ const goToPage = (pageId, context = null) => {
     const targetPage = document.getElementById(pageId);
     if (targetPage) {
         targetPage.classList.add('active');
-        const isFullScreenPage = ['page-booking-flow', 'page-live-tracking', 'page-chat', 'page-onboarding'].includes(pageId);
+        const isFullScreenPage = ['page-booking-flow', 'page-live-tracking', 'page-chat'].includes(pageId);
 
         if (document.querySelector('.bottom-nav')) {
             document.querySelector('.bottom-nav').style.display = isFullScreenPage ? 'none' : 'flex';
-        }
-        if (appContainer) {
-            appContainer.style.display = pageId === 'page-onboarding' ? 'none' : 'flex';
         }
     }
 
@@ -1114,58 +1111,6 @@ function fullInitBookingFlow() {
     appState.prefillBooking = null;
 }
 
-function initOnboarding() {
-    let currentSlide = 0;
-    const slidesContainer = document.getElementById('onboarding-slides-container');
-    const dotsContainer = document.getElementById('onboarding-dots-container');
-    const nextBtn = document.getElementById('onboarding-next-btn');
-    const totalSlides = 3;
-
-    for(let i=0; i < totalSlides; i++) {
-        dotsContainer.innerHTML += `<div class="onboarding-dot ${i === 0 ? 'active' : ''}" data-slide="${i}"></div>`;
-    }
-    const dots = dotsContainer.querySelectorAll('.onboarding-dot');
-
-    function updateOnboardingUI() {
-        slidesContainer.style.transform = `translateX(-${currentSlide * (100 / totalSlides)}%)`;
-        dots.forEach((dot, i) => dot.classList.toggle('active', i === currentSlide));
-        if (currentSlide === totalSlides - 1) {
-            nextBtn.textContent = 'Get Started';
-        } else {
-            nextBtn.textContent = 'Next';
-        }
-    }
-
-    nextBtn.addEventListener('click', () => {
-        if (currentSlide < totalSlides - 1) {
-            currentSlide++;
-            updateOnboardingUI();
-        } else {
-            try {
-                localStorage.setItem('onboardingComplete', 'true');
-            } catch(e) { console.error("Could not set localStorage.") }
-            goToPage('page-home');
-        }
-    });
-}
-
-// --- APP INITIALIZATION ---
-function initApp() { 
-    let onboardingComplete = false;
-    try {
-        onboardingComplete = localStorage.getItem('onboardingComplete') === 'true';
-    } catch (e) {
-        console.error("Could not access localStorage. Defaulting to onboarding.", e);
-    }
-
-    if (onboardingComplete) {
-        goToPage('page-home');
-    } else {
-        initOnboarding();
-        goToPage('page-onboarding');
-    }
-}
-
 // Add main event listeners
 function handleNavItemClick(item) {
     const target = item?.dataset?.target;
@@ -1193,6 +1138,6 @@ document.getElementById('cta-book-walk').addEventListener('click', () => launchB
 document.getElementById('cta-recurring-walk').addEventListener('click', () => goToPage('page-recurring-walks'));
 document.getElementById('btn-add-dog').addEventListener('click', () => goToPage('page-dog-form'));
 
-// Start the app
-initApp();
+// --- APP INITIALIZATION ---
+goToPage('page-home');
     });
