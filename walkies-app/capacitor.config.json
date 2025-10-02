@@ -1,0 +1,14 @@
+{
+  "appId": "com.walkies.app",
+  "appName": "Walkies",
+  "webDir": "build",
+  "bundledWebRuntime": false,
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 0
+    },
+    "StatusBar": {
+      "style": "DARK"
+    }
+  }
+}
